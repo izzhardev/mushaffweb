@@ -1,0 +1,155 @@
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+
+    // ===============================================================
+    // Assumed Data Model
+    // ===============================================================
+    //
+    // Collection: users
+    // Document ID: {uid}
+    // Fields:
+    //   - uid: string (required) - Firebase Auth UID
+    //   - email: string (required) - User email
+    //   - displayName: string (optional) - User display name
+    //   - role: string (required, enum: ['admin', 'user']) - User role
+    //   - createdAt: timestamp (optional) - Account creation time
+    //
+    // Collection: donations
+    // Document ID: auto-generated
+    // Fields:
+    //   - amount: number (required, positive) - Donation amount
+    //   - donorUid: string (required) - UID of the donor
+    //   - donorName: string (optional) - Name of the donor
+    //   - programId: string (required) - ID of the target program
+    //   - timestamp: timestamp (required) - Time of donation
+    //   - status: string (required, enum: ['pending', 'completed']) - Donation status
+    //
+    // ===============================================================
+
+    // ===============================================================
+    // Helper Functions
+    // ===============================================================
+
+    function isAuthenticated() {
+      return request.auth != null;
+    }
+
+    function isOwner(userId) {
+      return isAuthenticated() && request.auth.uid == userId;
+    }
+
+    function isAdmin() {
+      return isAuthenticated() &&
+        (get(/databases/$(database)/documents/users/$(request.auth.uid)).data.role == 'admin' ||
+          (request.auth.token.email == "njas.izzhar@gmail.com" && request.auth.token.email_verified == true));
+    }
+
+    function hasOnlyAllowedFields(fields) {
+      return request.resource.data.keys().hasOnly(fields);
+    }
+
+    function hasRequiredFields(fields) {
+      return request.resource.data.keys().hasAll(fields);
+    }
+
+    function isValidEmail(email) {
+      return email is string && email.matches("^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\\.[a-zA-Z]{2,}$");
+    }
+
+    // ===============================================================
+    // Domain Validators
+    // ===============================================================
+
+    function isValidUser(data) {
+      return hasRequiredFields(['uid', 'email', 'role']) &&
+             hasOnlyAllowedFields(['uid', 'email', 'displayName', 'role', 'createdAt', 'updatedAt', 'phone', 'address', 'bio', 'photoURL']) &&
+             data.uid is string &&
+             data.email is string && isValidEmail(data.email) &&
+             data.role in ['admin', 'user'] &&
+             (data.displayName == null || (data.displayName is string && data.displayName.size() < 100)) &&
+             (data.phone == null || (data.phone is string && data.phone.size() < 20)) &&
+             (data.address == null || (data.address is string && data.address.size() < 500)) &&
+             (data.bio == null || (data.bio is string && data.bio.size() < 1000)) &&
+             (data.photoURL == null || (data.photoURL is string && data.photoURL.size() < 500));
+    }
+
+    function isValidDonation(data) {
+      return hasRequiredFields(['amount', 'donorUid', 'programId', 'timestamp', 'status']) &&
+             hasOnlyAllowedFields(['amount', 'donorUid', 'donorName', 'programId', 'timestamp', 'status', 'referrerUid', 'phone']) &&
+             data.amount is number && data.amount > 0 &&
+             data.donorUid is string &&
+             data.programId is string &&
+             data.status in ['pending', 'completed'] &&
+             (data.donorName == null || (data.donorName is string && data.donorName.size() < 100)) &&
+             (data.referrerUid == null || (data.referrerUid is string && data.referrerUid.size() < 100)) &&
+             (data.phone == null || (data.phone is string && data.phone.size() < 20));
+    }
+
+    // ===============================================================
+    // Rules
+    // ===============================================================
+
+    match /users/{userId} {
+      // Users can read their own profile, admins can read all
+      allow read: if isOwner(userId) || isAdmin();
+      
+      // Users can create/update their own profile, but can't set themselves as admin unless already admin
+      allow create: if isOwner(userId) && isValidUser(request.resource.data) && 
+                      (request.resource.data.role == 'user' || isAdmin());
+      
+      allow update: if isOwner(userId) && isValidUser(request.resource.data) && 
+                      (request.resource.data.role == resource.data.role || isAdmin());
+    }
+
+    match /donations/{donationId} {
+      // Users can read their own donations or donations they referred, admins can read all
+      allow read: if isAuthenticated() && (resource.data.donorUid == request.auth.uid || resource.data.referrerUid == request.auth.uid || isAdmin());
+      
+      // Users can create donations for themselves
+      allow create: if isAuthenticated() && 
+                      request.resource.data.donorUid == request.auth.uid && 
+                      isValidDonation(request.resource.data);
+      
+      // Donations are immutable for users, only admins can update (e.g. status)
+      allow update: if isAdmin() && isValidDonation(request.resource.data);
+      
+      allow delete: if isAdmin();
+    }
+
+    match /programs/{programId} {
+      allow read: if true;
+      allow write: if isAdmin();
+    }
+
+    match /articles/{articleId} {
+      allow read: if true;
+      allow write: if isAdmin();
+    }
+
+    match /gallery/{itemId} {
+      allow read: if true;
+      allow write: if isAdmin();
+    }
+
+    match /campaigns/{campaignId} {
+      allow read: if true;
+      allow write: if isAdmin();
+    }
+
+    match /reports/{reportId} {
+      allow read: if isAuthenticated();
+      allow write: if isAdmin();
+    }
+
+    match /media/{mediaId} {
+      allow read: if isAuthenticated();
+      allow write: if isAuthenticated();
+    }
+
+    match /settings/{settingId} {
+      allow read: if true;
+      allow write: if isAdmin();
+    }
+  }
+}

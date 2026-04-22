@@ -1,0 +1,56 @@
+import React from 'react';
+import { motion } from 'motion/react';
+import AboutSection from '../components/AboutSection';
+import VisionMission from '../components/VisionMission';
+import ProgramsGrid from '../components/ProgramsGrid';
+import TeamSection from '../components/TeamSection';
+import ContactSection from '../components/ContactSection';
+
+export default function About() {
+  return (
+    <main className="bg-white">
+      {/* Hero Section */}
+      <section className="relative py-24 bg-slate-900 overflow-hidden">
+        <div className="absolute inset-0 opacity-20">
+          <img 
+            src="https://picsum.photos/seed/about-hero/1920/1080" 
+            alt="Background" 
+            className="w-full h-full object-cover"
+            referrerPolicy="no-referrer"
+          />
+          <div className="absolute inset-0 bg-gradient-to-b from-slate-900 via-slate-900/80 to-slate-900" />
+        </div>
+        
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10 text-center">
+          <motion.h1 
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            className="text-4xl lg:text-6xl font-black text-white mb-6 uppercase tracking-tight"
+          >
+            Tentang <span className="text-primary">Mushaff</span> Indonesia
+          </motion.h1>
+          <motion.p 
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: 0.1 }}
+            className="text-xl text-white/70 max-w-3xl mx-auto leading-relaxed font-medium"
+          >
+            Melayani Umat, Mensyiarkan Al-Quran, dan Membangun Indonesia yang Berkarakter.
+          </motion.p>
+        </div>
+      </section>
+
+      <AboutSection />
+      
+      <div className="bg-slate-50">
+        <VisionMission />
+      </div>
+
+      <ProgramsGrid />
+      
+      <TeamSection />
+      
+      <ContactSection />
+    </main>
+  );
+}

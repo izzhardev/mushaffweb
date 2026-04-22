@@ -1,0 +1,160 @@
+{
+  "entities": {
+    "UserProfile": {
+      "title": "UserProfile",
+      "description": "Data profil pengguna yayasan",
+      "type": "object",
+      "properties": {
+        "uid": { "type": "string", "description": "Firebase Auth UID" },
+        "email": { "type": "string", "format": "email" },
+        "displayName": { "type": "string" },
+        "role": { "type": "string", "enum": ["admin", "user"] },
+        "createdAt": { "type": "string", "format": "date-time" }
+      },
+      "required": ["uid", "email", "role"]
+    },
+    "Program": {
+      "title": "Program",
+      "description": "Program yayasan",
+      "type": "object",
+      "properties": {
+        "title": { "type": "string" },
+        "description": { "type": "string" },
+        "category": { "type": "string" },
+        "icon": { "type": "string" }
+      },
+      "required": ["title", "category"]
+    },
+    "Donation": {
+      "title": "Donation",
+      "description": "Data transaksi donasi",
+      "type": "object",
+      "properties": {
+        "amount": { "type": "number" },
+        "donorUid": { "type": "string" },
+        "donorName": { "type": "string" },
+        "programId": { "type": "string" },
+        "timestamp": { "type": "string", "format": "date-time" },
+        "status": { "type": "string", "enum": ["pending", "completed"] }
+      },
+      "required": ["amount", "programId", "timestamp"]
+    },
+    "Article": {
+      "title": "Article",
+      "description": "Artikel berita atau inspirasi",
+      "type": "object",
+      "properties": {
+        "title": { "type": "string" },
+        "content": { "type": "string" },
+        "authorUid": { "type": "string" },
+        "authorName": { "type": "string" },
+        "image": { "type": "string" },
+        "category": { "type": "string" },
+        "createdAt": { "type": "string", "format": "date-time" }
+      },
+      "required": ["title", "content", "authorUid"]
+    },
+    "GalleryItem": {
+      "title": "GalleryItem",
+      "description": "Foto galeri kegiatan",
+      "type": "object",
+      "properties": {
+        "title": { "type": "string" },
+        "imageUrl": { "type": "string" },
+        "description": { "type": "string" },
+        "uploadedBy": { "type": "string" },
+        "createdAt": { "type": "string", "format": "date-time" }
+      },
+      "required": ["imageUrl", "uploadedBy"]
+    },
+    "Campaign": {
+      "title": "Campaign",
+      "description": "Program penggalangan dana",
+      "type": "object",
+      "properties": {
+        "title": { "type": "string" },
+        "description": { "type": "string" },
+        "targetAmount": { "type": "number" },
+        "currentAmount": { "type": "number" },
+        "endDate": { "type": "string", "format": "date" },
+        "image": { "type": "string" },
+        "status": { "type": "string", "enum": ["active", "completed"] }
+      },
+      "required": ["title", "targetAmount", "status"]
+    },
+    "Report": {
+      "title": "Report",
+      "description": "Laporan yayasan",
+      "type": "object",
+      "properties": {
+        "title": { "type": "string" },
+        "description": { "type": "string" },
+        "fileUrl": { "type": "string" },
+        "type": { "type": "string", "enum": ["financial", "activity"] },
+        "date": { "type": "string", "format": "date" }
+      },
+      "required": ["title", "fileUrl", "type"]
+    },
+    "Media": {
+      "title": "Media",
+      "description": "Catatan semua file yang diunggah ke Cloudinary",
+      "type": "object",
+      "properties": {
+        "url": { "type": "string" },
+        "publicId": { "type": "string" },
+        "fileName": { "type": "string" },
+        "uploadedAt": { "type": "string", "format": "date-time" },
+        "uploadedBy": { "type": "string" }
+      },
+      "required": ["url", "uploadedAt"]
+    },
+    "FeaturedGallery": {
+      "title": "FeaturedGallery",
+      "description": "Konfigurasi galeri unggulan untuk landing page",
+      "type": "object",
+      "properties": {
+        "title": { "type": "string" },
+        "imageUrls": { "type": "array", "items": { "type": "string" } }
+      },
+      "required": ["title", "imageUrls"]
+    }
+  },
+  "firestore": {
+    "/users/{uid}": {
+      "schema": "UserProfile",
+      "description": "Koleksi profil pengguna"
+    },
+    "/programs/{programId}": {
+      "schema": "Program",
+      "description": "Koleksi program yayasan"
+    },
+    "/donations/{donationId}": {
+      "schema": "Donation",
+      "description": "Koleksi transaksi donasi"
+    },
+    "/articles/{articleId}": {
+      "schema": "Article",
+      "description": "Koleksi artikel"
+    },
+    "/gallery/{itemId}": {
+      "schema": "GalleryItem",
+      "description": "Koleksi galeri foto"
+    },
+    "/campaigns/{campaignId}": {
+      "schema": "Campaign",
+      "description": "Koleksi penggalangan dana"
+    },
+    "/reports/{reportId}": {
+      "schema": "Report",
+      "description": "Koleksi laporan"
+    },
+    "/media/{mediaId}": {
+      "schema": "Media",
+      "description": "Koleksi semua media yang diunggah"
+    },
+    "/settings/{settingId}": {
+      "schema": "FeaturedGallery",
+      "description": "Koleksi pengaturan aplikasi"
+    }
+  }
+}
