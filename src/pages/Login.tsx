@@ -1,11 +1,17 @@
 import React from 'react';
 import { motion } from 'motion/react';
 import { useAuth } from '../hooks/useAuth';
+import { useAppDatabase } from '../hooks/useAppDatabase';
 import { Navigate } from 'react-router-dom';
 import { LogIn, Heart } from 'lucide-react';
 
 export default function Login() {
   const { user, loginWithGoogle, loading } = useAuth();
+  const { settings } = useAppDatabase();
+
+  const siteSettings = settings.find(s => s.id === 'general') || {
+    site_logo: '/logo.png'
+  };
 
   if (loading) {
     return (
@@ -38,7 +44,15 @@ export default function Login() {
       >
         <div className="text-center mb-10">
           <div className="w-20 h-20 bg-primary/10 rounded-3xl flex items-center justify-center mx-auto mb-6">
-            <img src="/logo.png" alt="Logo" className="w-12 h-12 object-contain" />
+            <img 
+              src={siteSettings.site_logo || "/logo.png"} 
+              alt="Logo" 
+              className="w-12 h-12 object-contain" 
+              referrerPolicy="no-referrer"
+              onError={(e) => {
+                (e.target as HTMLImageElement).src = "https://picsum.photos/seed/mushaff-logo/100/100";
+              }}
+            />
           </div>
           <h1 className="text-3xl font-bold text-slate-900 mb-2 font-title">Selamat Datang</h1>
           <p className="text-slate-500">Masuk untuk mengelola donasi dan kontribusi kebaikan Anda.</p>

@@ -83,10 +83,11 @@ export default function Dashboard() {
   });
 
   const featuredGallery = settings.find(s => s.id === 'featured_gallery') || { title: 'Galeri Kegiatan', imageUrls: [] };
+  const generalSettings = settings.find(s => s.id === 'general') || {};
 
   useEffect(() => {
     if (activeSection === 'settings') {
-      const currentSettings = settings.find(s => s.id === 'general');
+      const currentSettings = generalSettings;
       if (currentSettings) {
         setSiteSettingsForm({
           site_name: currentSettings.site_name || '',
@@ -98,7 +99,7 @@ export default function Dashboard() {
         });
       }
     }
-  }, [activeSection, settings]);
+  }, [activeSection, generalSettings]);
 
   const handleToggleFeatured = async (imageUrl: string) => {
     const currentUrls = [...(featuredGallery.imageUrls || [])];
@@ -382,14 +383,15 @@ export default function Dashboard() {
         <div className="p-8">
           <div className="flex items-center gap-3 mb-12">
             <img 
-              src="/logo.png" 
-              alt="Mushaff Edu Logo" 
+              src={generalSettings.site_logo || "/logo.png"} 
+              alt={generalSettings.site_name || "Mushaff Indonesia"} 
               className="w-8 h-8 object-contain"
+              referrerPolicy="no-referrer"
               onError={(e) => {
                 (e.target as HTMLImageElement).src = "https://picsum.photos/seed/mushaff-logo/100/100";
               }}
             />
-            <span className="font-bold text-slate-900">Mushaff Dashboard</span>
+            <span className="font-bold text-slate-900">{generalSettings.site_name || "Mushaff Dashboard"}</span>
           </div>
           
           <nav className="space-y-2">

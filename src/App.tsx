@@ -8,6 +8,7 @@ import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-d
 import Navbar from './components/Navbar';
 import Footer from './components/Footer';
 import ConnectivityBanner from './components/ConnectivityBanner';
+import DynamicBrandManager from './components/DynamicBrandManager';
 import ScrollToTop from './components/ScrollToTop';
 import Home from './pages/Home';
 import Donation from './pages/Donation';
@@ -45,6 +46,7 @@ export default function App() {
   return (
     <AuthProvider>
       <ErrorBoundary>
+        <DynamicBrandManager />
         <Router>
           <ScrollToTop />
           <div className="min-h-screen flex flex-col">
