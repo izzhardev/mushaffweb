@@ -4,6 +4,7 @@ import NewsSection from '../components/NewsSection';
 import PhotoGallerySection from '../components/PhotoGallerySection';
 import DonationCampaigns from '../components/DonationCampaigns';
 import AboutSection from '../components/AboutSection';
+import BeneficiariesSection from '../components/BeneficiariesSection';
 import ContactSection from '../components/ContactSection';
 import { motion } from 'motion/react';
 
@@ -26,6 +27,7 @@ export default function Home() {
         viewport={{ once: true }}
       >
         <AboutSection />
+        <BeneficiariesSection />
         <ContactSection />
       </motion.div>
     </main>

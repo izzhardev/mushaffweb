@@ -75,9 +75,10 @@ export default function ContactSection() {
           >
             {/* Placeholder for Map or Image */}
             <img 
-              src="https://picsum.photos/seed/mushaff-location/800/1000" 
+              src="https://res.cloudinary.com/dgezrzjnb/image/upload/v1776780950/cycwu4porqzodhuyf9zo.png" 
               alt="Location" 
-              className="w-full h-full object-cover"
+              className="w-full h-full object-cover" 
+              style={{ objectPosition: 'right' }}
             />
           </motion.div>
         </div>
