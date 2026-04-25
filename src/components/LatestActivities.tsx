@@ -5,19 +5,19 @@ export default function LatestActivities() {
   const activities = [
     {
       title: 'Tadarus on the Street',
-      image: 'https://picsum.photos/seed/tadarus/800/600',
+      image: 'https://res.cloudinary.com/dgezrzjnb/image/upload/v1777128283/k0w7glbsayvpubhxkd5q.png',
       desc: 'Gerakan membaca Al-Quran di ruang publik untuk mensyiarkan nilai-nilai Islam.',
       icon: Users,
     },
     {
       title: 'Mushaff Tartila',
-      image: 'https://picsum.photos/seed/tartila/800/600',
+      image: 'https://res.cloudinary.com/dgezrzjnb/image/upload/v1777128996/wdjzpyfchxojtmjzhmmp.png',
       desc: 'Program intensif belajar tahsin dan tajwid dengan metode yang mudah dipahami.',
       icon: BookOpen,
     },
     {
       title: 'Kajian Mushaff',
-      image: 'https://picsum.photos/seed/kajian/800/600',
+      image: 'https://res.cloudinary.com/dgezrzjnb/image/upload/v1777128969/rlpavfc3oqiii20wks9g.png',
       desc: 'Kajian rutin mingguan membahas tafsir dan implementasi Al-Quran dalam kehidupan.',
       icon: Mic2,
     }
@@ -77,7 +77,7 @@ export default function LatestActivities() {
 
               <div className="mt-12 relative">
                 <img 
-                  src="/app.jpeg" 
+                  src="https://res.cloudinary.com/dgezrzjnb/image/upload/v1777128227/ykt9iva8qotxeqeyoneh.jpg" 
                   alt="App Mushaff Edu" 
                   className="w-48 mx-auto rounded-3xl shadow-2xl rotate-6 group-hover:rotate-0 transition-transform duration-500"
                   referrerPolicy="no-referrer"
