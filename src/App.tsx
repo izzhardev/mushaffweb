@@ -22,6 +22,7 @@ import CampaignEditor from './pages/CampaignEditor';
 import ArticleDetail from './pages/ArticleDetail';
 import Profile from './pages/Profile';
 import { AuthProvider, useAuth } from './hooks/useAuth';
+import { useLocation } from 'react-router-dom';
 import ErrorBoundary from './components/ErrorBoundary';
 
 function ProtectedRoute({ children }: { children: React.ReactNode }) {
@@ -42,6 +43,53 @@ function ProtectedRoute({ children }: { children: React.ReactNode }) {
   return <>{children}</>;
 }
 
+function AppContent() {
+  const location = useLocation();
+  const isDashboardPage = location.pathname.startsWith('/dashboard') || 
+                           location.pathname.startsWith('/editor') || 
+                           location.pathname.startsWith('/campaign-editor') ||
+                           location.pathname.startsWith('/profile');
+
+  return (
+    <div className="min-h-screen flex flex-col">
+      <ConnectivityBanner />
+      {!isDashboardPage && <Navbar />}
+      <div className="flex-grow">
+        <Routes>
+          <Route path="/" element={<Home />} />
+          <Route path="/about" element={<About />} />
+          <Route path="/donate" element={<DonationDetail />} />
+          <Route path="/donate/:id" element={<DonationDetail />} />
+          <Route path="/donation-confirmation/:id" element={<DonationConfirmation />} />
+          <Route path="/article/:id" element={<ArticleDetail />} />
+          <Route path="/login" element={<Login />} />
+          <Route path="/editor" element={<ArticleEditor />} />
+          <Route path="/editor/:id" element={<ArticleEditor />} />
+          <Route path="/campaign-editor" element={<CampaignEditor />} />
+          <Route path="/campaign-editor/:id" element={<CampaignEditor />} />
+          <Route 
+            path="/dashboard" 
+            element={
+              <ProtectedRoute>
+                <Dashboard />
+              </ProtectedRoute>
+            } 
+          />
+          <Route 
+            path="/profile" 
+            element={
+              <ProtectedRoute>
+                <Profile />
+              </ProtectedRoute>
+            } 
+          />
+        </Routes>
+      </div>
+      {!isDashboardPage && <Footer />}
+    </div>
+  );
+}
+
 export default function App() {
   return (
     <AuthProvider>
@@ -49,42 +97,7 @@ export default function App() {
         <DynamicBrandManager />
         <Router>
           <ScrollToTop />
-          <div className="min-h-screen flex flex-col">
-            <ConnectivityBanner />
-            <Navbar />
-            <div className="flex-grow">
-              <Routes>
-                <Route path="/" element={<Home />} />
-                <Route path="/about" element={<About />} />
-                <Route path="/donate" element={<DonationDetail />} />
-                <Route path="/donate/:id" element={<DonationDetail />} />
-                <Route path="/donation-confirmation/:id" element={<DonationConfirmation />} />
-                <Route path="/article/:id" element={<ArticleDetail />} />
-                <Route path="/login" element={<Login />} />
-                <Route path="/editor" element={<ArticleEditor />} />
-                <Route path="/editor/:id" element={<ArticleEditor />} />
-                <Route path="/campaign-editor" element={<CampaignEditor />} />
-                <Route path="/campaign-editor/:id" element={<CampaignEditor />} />
-                <Route 
-                  path="/dashboard" 
-                  element={
-                    <ProtectedRoute>
-                      <Dashboard />
-                    </ProtectedRoute>
-                  } 
-                />
-                <Route 
-                  path="/profile" 
-                  element={
-                    <ProtectedRoute>
-                      <Profile />
-                    </ProtectedRoute>
-                  } 
-                />
-              </Routes>
-            </div>
-            <Footer />
-          </div>
+          <AppContent />
         </Router>
       </ErrorBoundary>
     </AuthProvider>

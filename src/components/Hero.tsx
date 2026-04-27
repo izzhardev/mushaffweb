@@ -42,6 +42,16 @@ export default function Hero() {
   const { slider } = useAppDatabase();
   
   const activeSlides = slider.length > 0 ? slider : MOCK_SLIDES;
+  
+  // Ensure currentSlide is always within bounds
+  const safeCurrentSlide = currentSlide >= activeSlides.length ? 0 : currentSlide;
+  const currentItem = activeSlides[safeCurrentSlide];
+
+  useEffect(() => {
+    if (currentSlide >= activeSlides.length) {
+      setCurrentSlide(0);
+    }
+  }, [activeSlides.length, currentSlide]);
 
   useEffect(() => {
     if (activeSlides.length <= 1) return;
@@ -54,13 +64,13 @@ export default function Hero() {
   const nextSlide = () => setCurrentSlide((prev) => (prev + 1) % activeSlides.length);
   const prevSlide = () => setCurrentSlide((prev) => (prev - 1 + activeSlides.length) % activeSlides.length);
 
-  if (activeSlides.length === 0) return null;
+  if (!currentItem) return null;
 
   return (
     <section className="relative h-[600px] lg:h-[800px] w-full overflow-hidden bg-slate-900">
       <AnimatePresence mode="wait">
         <motion.div
-          key={currentSlide}
+          key={safeCurrentSlide}
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
           exit={{ opacity: 0 }}
@@ -69,8 +79,8 @@ export default function Hero() {
         >
           <div className="absolute inset-0 bg-gradient-to-r from-black/80 via-black/40 to-transparent z-10" />
           <img
-            src={activeSlides[currentSlide].image}
-            alt={activeSlides[currentSlide].title}
+            src={currentItem.image}
+            alt={currentItem.title}
             className="w-full h-full object-cover"
             referrerPolicy="no-referrer"
           />
@@ -80,7 +90,7 @@ export default function Hero() {
       <div className="relative z-20 h-full max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 flex flex-col justify-center">
         <AnimatePresence mode="wait">
           <motion.div
-            key={currentSlide}
+            key={safeCurrentSlide}
             initial={{ opacity: 0, y: 30 }}
             animate={{ opacity: 1, y: 0 }}
             exit={{ opacity: 0, y: -30 }}
@@ -88,28 +98,28 @@ export default function Hero() {
             className="max-w-2xl"
           >
             <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-primary text-white text-xs font-bold mb-6 uppercase tracking-widest">
-              {activeSlides[currentSlide].accent}
+              {currentItem.accent}
             </div>
             
             <h1 className="text-4xl lg:text-7xl font-bold text-white leading-tight mb-6">
-              {activeSlides[currentSlide].title}
+              {currentItem.title}
             </h1>
             
             <p className="text-lg lg:text-xl text-white/80 mb-10 leading-relaxed">
-              {activeSlides[currentSlide].subtitle}
+              {currentItem.subtitle}
             </p>
 
             <div className="flex flex-col sm:flex-row gap-4">
               <Link
-                to={activeSlides[currentSlide].targetLink || '/donate'}
+                to={currentItem.targetLink || '/donate'}
                 className="inline-flex items-center justify-center gap-2 bg-primary text-white px-8 py-4 rounded-full text-lg font-bold hover:bg-primary/90 transition-all shadow-xl shadow-primary/20 group"
               >
-                {activeSlides[currentSlide].cta || 'Bantu Sekarang'}
+                {currentItem.cta || 'Bantu Sekarang'}
                 <Heart className="w-5 h-5 group-hover:scale-110 transition-transform" />
               </Link>
-              {activeSlides[currentSlide].detailLink && (
+              {currentItem.detailLink && (
                 <Link
-                  to={activeSlides[currentSlide].detailLink}
+                  to={currentItem.detailLink}
                   className="inline-flex items-center justify-center gap-2 bg-white/10 backdrop-blur-md text-white border border-white/20 px-8 py-4 rounded-full text-lg font-bold hover:bg-white/20 transition-all group"
                 >
                   Lihat Detail
@@ -147,7 +157,7 @@ export default function Hero() {
               key={i}
               onClick={() => setCurrentSlide(i)}
               className={`h-1.5 rounded-full transition-all ${
-                currentSlide === i ? "w-8 bg-primary" : "w-2 bg-white/30"
+                safeCurrentSlide === i ? "w-8 bg-primary" : "w-2 bg-white/30"
               }`}
             />
           ))}

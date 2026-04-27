@@ -46,7 +46,7 @@ export default function Navbar() {
                   (e.target as HTMLImageElement).src = "https://picsum.photos/seed/mushaff-logo/100/100";
                 }}
               />
-              <div className="flex flex-col">
+              <div className="hidden md:flex flex-col">
                 <span className="text-xl font-bold text-primary tracking-tight leading-none">
                   {firstName}<span className="text-slate-900">{lastName}</span>
                 </span>

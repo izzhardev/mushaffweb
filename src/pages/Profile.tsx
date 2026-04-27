@@ -67,9 +67,9 @@ export default function Profile() {
   }
 
   return (
-    <div className="min-h-screen bg-slate-50 py-12 px-4 sm:px-6 lg:px-8">
+    <div className="min-h-screen bg-slate-50 py-6 lg:py-12 px-4 sm:px-6 lg:px-8">
       <div className="max-w-3xl mx-auto">
-        <div className="mb-8 flex items-center justify-between">
+        <div className="mb-6 lg:mb-8 flex items-center justify-between">
           <button 
             onClick={() => navigate(-1)}
             className="flex items-center gap-2 text-slate-600 hover:text-primary transition-colors font-medium"

@@ -1,9 +1,11 @@
-import { motion } from 'motion/react';
+import { motion, AnimatePresence } from 'motion/react';
 import { useAppDatabase } from '../hooks/useAppDatabase';
-import { Maximize2, ImageIcon } from 'lucide-react';
+import { Maximize2, X } from 'lucide-react';
+import { useState } from 'react';
 
 export default function PhotoGallerySection() {
   const { settings } = useAppDatabase();
+  const [zoomedImage, setZoomedImage] = useState<string | null>(null);
   const featured = settings.find(s => s.id === 'featured_gallery');
 
   if (!featured || !featured.imageUrls || featured.imageUrls.length === 0) {
@@ -48,7 +50,8 @@ export default function PhotoGallerySection() {
               whileInView={{ opacity: 1, y: 0 }}
               viewport={{ once: true }}
               transition={{ delay: (index % 10) * 0.05 }}
-              className="relative group rounded-3xl overflow-hidden shadow-lg hover:shadow-2xl transition-all duration-500 break-inside-avoid"
+              className="relative group rounded-3xl overflow-hidden shadow-lg hover:shadow-2xl transition-all duration-500 break-inside-avoid cursor-pointer"
+              onClick={() => setZoomedImage(url)}
             >
               <img 
                 src={url} 
@@ -57,7 +60,7 @@ export default function PhotoGallerySection() {
                 referrerPolicy="no-referrer"
               />
               <div className="absolute inset-0 bg-slate-900/40 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center">
-                <div title="Lihat Foto" className="w-12 h-12 bg-white rounded-full flex items-center justify-center text-slate-900 transform translate-y-4 group-hover:translate-y-0 transition-transform cursor-pointer">
+                <div title="Lihat Foto" className="w-12 h-12 bg-white rounded-full flex items-center justify-center text-slate-900 transform translate-y-4 group-hover:translate-y-0 transition-transform shadow-xl">
                   <Maximize2 className="w-6 h-6" />
                 </div>
               </div>
@@ -65,6 +68,44 @@ export default function PhotoGallerySection() {
           ))}
         </div>
       </div>
+
+      <AnimatePresence>
+        {zoomedImage && (
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            onClick={() => setZoomedImage(null)}
+            className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-900/90 backdrop-blur-md cursor-zoom-out"
+          >
+            <motion.button
+              initial={{ opacity: 0, scale: 0.5, rotate: -90 }}
+              animate={{ opacity: 1, scale: 1, rotate: 0 }}
+              className="absolute top-6 right-6 p-3 bg-white/10 hover:bg-white/20 text-white rounded-full transition-colors z-20"
+              onClick={(e) => {
+                e.stopPropagation();
+                setZoomedImage(null);
+              }}
+            >
+              <X className="w-8 h-8" />
+            </motion.button>
+            <motion.div
+              initial={{ opacity: 0, scale: 0.9, y: 20 }}
+              animate={{ opacity: 1, scale: 1, y: 0 }}
+              exit={{ opacity: 0, scale: 0.9, y: 20 }}
+              onClick={(e) => e.stopPropagation()}
+              className="relative max-w-5xl w-full max-h-[90vh] flex items-center justify-center cursor-default"
+            >
+              <img
+                src={zoomedImage}
+                alt="Full Gallery"
+                className="max-w-full max-h-[90vh] object-contain rounded-2xl shadow-2xl ring-1 ring-white/10"
+                referrerPolicy="no-referrer"
+              />
+            </motion.div>
+          </motion.div>
+        )}
+      </AnimatePresence>
     </section>
   );
 }

@@ -19,6 +19,7 @@ import {
   X,
   History,
   Upload,
+  Menu,
   Maximize2,
   CheckCircle2,
   Star,
@@ -58,6 +59,7 @@ export default function Dashboard() {
   } = useAppDatabase();
   
   const [activeSection, setActiveSection] = useState<Section>(userProfile?.role === 'admin' ? 'overview' : 'donations');
+  const [isSidebarOpen, setIsSidebarOpen] = useState(false);
 
   useEffect(() => {
     if (userProfile && userProfile.role === 'user' && activeSection === 'overview') {
@@ -312,45 +314,58 @@ export default function Dashboard() {
   };
 
   const renderManagementSection = (title: string, data: any[], fields: { key: string, label: string }[]) => (
-    <div className="bg-white rounded-[2.5rem] shadow-sm border border-slate-100 overflow-hidden">
-      <div className="p-8 border-b border-slate-100 flex justify-between items-center">
-        <h2 className="text-xl font-bold text-slate-900">{title}</h2>
+    <div className="bg-white rounded-[1.5rem] lg:rounded-[2.5rem] shadow-sm border border-slate-100 overflow-hidden">
+      <div className="p-5 lg:p-8 border-b border-slate-100 flex flex-col sm:flex-row gap-4 sm:justify-between sm:items-center bg-white">
+        <div>
+          <h2 className="text-lg lg:text-xl font-black text-slate-900 tracking-tight">{title}</h2>
+          <p className="text-[10px] lg:text-xs text-slate-400 font-bold uppercase tracking-widest mt-1">Kelola data {title.toLowerCase()}</p>
+        </div>
         <button 
           onClick={() => handleOpenModal()}
-          className="bg-primary text-white px-6 py-2.5 rounded-full font-bold text-sm flex items-center gap-2 hover:bg-primary/90 transition-all"
+          className="bg-primary text-white px-6 py-3 rounded-xl lg:rounded-2xl font-bold text-xs lg:text-sm flex items-center justify-center gap-2 hover:opacity-90 transition-all shadow-lg shadow-primary/20 active:scale-95 group uppercase tracking-widest"
         >
-          <Plus className="w-4 h-4" />
-          Tambah Baru
+          <Plus className="w-4 h-4 group-hover:rotate-90 transition-transform duration-300" />
+          Tambah Data
         </button>
       </div>
-      <div className="overflow-x-auto">
-        <table className="w-full text-left">
+      <div className="overflow-x-auto scrollbar-hide">
+        <table className="w-full text-left min-w-[700px]">
           <thead>
-            <tr className="bg-slate-50">
+            <tr className="bg-slate-50/50">
               {fields.map(f => (
-                <th key={f.key} className="px-8 py-4 text-xs font-bold text-slate-500 uppercase tracking-wider">{f.label}</th>
+                <th key={f.key} className="px-6 lg:px-8 py-5 text-[10px] lg:text-xs font-black text-slate-400 uppercase tracking-widest">{f.label}</th>
               ))}
-              <th className="px-8 py-4 text-xs font-bold text-slate-500 uppercase tracking-wider text-right">Aksi</th>
+              <th className="px-6 lg:px-8 py-5 text-[10px] lg:text-xs font-black text-slate-400 uppercase tracking-widest text-right">Kontrol</th>
             </tr>
           </thead>
-          <tbody className="divide-y divide-slate-100">
+          <tbody className="divide-y divide-slate-50">
             {data.length > 0 ? data.map((item) => (
-              <tr key={item.id} className="hover:bg-slate-50/50 transition-colors">
+              <tr key={item.id} className="group hover:bg-slate-50/30 transition-all duration-300">
                 {fields.map(f => (
-                  <td key={f.key} className="px-8 py-4 text-sm text-slate-600">
+                  <td key={f.key} className="px-6 lg:px-8 py-5 text-xs lg:text-sm text-slate-600 whitespace-nowrap font-medium tracking-tight">
                     {f.key === 'image' || f.key === 'imageUrl' ? (
-                      <img src={item[f.key]} className="w-12 h-12 rounded-lg object-cover" alt="" />
+                      <div className="w-10 h-10 lg:w-14 lg:h-14 rounded-xl overflow-hidden border border-slate-100 shadow-sm group-hover:shadow-md transition-shadow">
+                        <img src={item[f.key]} className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500" alt="" referrerPolicy="no-referrer" />
+                      </div>
                     ) : (
-                      item[f.key]?.toString() || '-'
+                      item[f.key]?.toString() || <span className="text-slate-300 italic">kosong</span>
                     )}
                   </td>
                 ))}
-                <td className="px-8 py-4 text-right">
-                  <div className="flex justify-end gap-2">
-                    <button onClick={() => handleOpenModal(item)} className="p-2 text-slate-400 hover:text-primary transition-colors">
+                <td className="px-6 lg:px-8 py-5 text-right">
+                  <div className="flex justify-end gap-2 transform transition-transform group-hover:translate-x-[-4px]">
+                    <button 
+                      onClick={() => handleOpenModal(item)} 
+                      className="p-2.5 text-slate-400 hover:text-primary transition-all hover:bg-primary/5 rounded-xl border border-transparent hover:border-primary/10"
+                      title="Edit Data"
+                    >
                       <Edit2 className="w-4 h-4" />
                     </button>
-                    <button onClick={() => handleDelete(item.id)} className="p-2 text-slate-400 hover:text-red-500 transition-colors">
+                    <button 
+                      onClick={() => handleDelete(item.id)} 
+                      className="p-2.5 text-slate-400 hover:text-red-500 transition-all hover:bg-red-50 rounded-xl border border-transparent hover:border-red-100"
+                      title="Hapus Permanen"
+                    >
                       <Trash2 className="w-4 h-4" />
                     </button>
                   </div>
@@ -358,8 +373,14 @@ export default function Dashboard() {
               </tr>
             )) : (
               <tr>
-                <td colSpan={fields.length + 1} className="px-8 py-12 text-center text-slate-500 italic">
-                  Belum ada data tersedia.
+                <td colSpan={fields.length + 1} className="px-6 lg:px-8 py-20 text-center">
+                  <div className="flex flex-col items-center gap-3">
+                    <div className="w-16 h-16 bg-slate-50 rounded-full flex items-center justify-center text-slate-200">
+                       <Plus className="w-8 h-8 opacity-50" />
+                    </div>
+                    <p className="text-slate-400 font-bold uppercase tracking-widest text-[10px]">Data Belum Tersedia</p>
+                    <button onClick={() => handleOpenModal()} className="text-primary font-bold text-xs hover:underline decoration-2 underline-offset-4">Mulai Tambah Baris Pertama</button>
+                  </div>
                 </td>
               </tr>
             )}
@@ -377,21 +398,45 @@ export default function Dashboard() {
   ];
 
   return (
-    <div className="min-h-screen bg-slate-50 flex">
+    <div className="min-h-screen bg-slate-50 flex flex-col lg:flex-row overflow-x-hidden relative">
+      {/* Mobile Overlay */}
+      <AnimatePresence>
+        {isSidebarOpen && (
+          <motion.div 
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            onClick={() => setIsSidebarOpen(false)}
+            className="fixed inset-0 bg-slate-900/40 backdrop-blur-md z-40 lg:hidden"
+          />
+        )}
+      </AnimatePresence>
+
       {/* Sidebar */}
-      <aside className="hidden lg:flex w-72 bg-white border-r border-slate-200 flex-col sticky top-0 h-screen">
-        <div className="p-8">
-          <div className="flex items-center gap-3 mb-12">
-            <img 
-              src={generalSettings.site_logo || "/logo.png"} 
-              alt={generalSettings.site_name || "Mushaff Indonesia"} 
-              className="w-8 h-8 object-contain"
-              referrerPolicy="no-referrer"
-              onError={(e) => {
-                (e.target as HTMLImageElement).src = "https://picsum.photos/seed/mushaff-logo/100/100";
-              }}
-            />
-            <span className="font-bold text-slate-900">{generalSettings.site_name || "Mushaff Dashboard"}</span>
+      <aside className={cn(
+        "fixed inset-y-0 left-0 z-50 w-[280px] sm:w-72 bg-white border-r border-slate-200 flex flex-col transition-all duration-500 ease-in-out lg:translate-x-0 lg:sticky lg:top-0 lg:h-screen lg:min-h-screen",
+        isSidebarOpen ? "translate-x-0 shadow-2xl shadow-slate-900/20" : "-translate-x-full"
+      )}>
+        <div className="p-6 lg:p-8">
+          <div className="flex items-center justify-between mb-8 lg:mb-12">
+            <div className="flex items-center gap-3">
+              <img 
+                src={generalSettings.site_logo || "/logo.png"} 
+                alt={generalSettings.site_name || "Mushaff Indonesia"} 
+                className="w-7 h-7 lg:w-8 lg:h-8 object-contain"
+                referrerPolicy="no-referrer"
+                onError={(e) => {
+                  (e.target as HTMLImageElement).src = "https://picsum.photos/seed/mushaff-logo/100/100";
+                }}
+              />
+              <span className="font-bold text-slate-900">{generalSettings.site_name || "Mushaff Dashboard"}</span>
+            </div>
+            <button 
+              onClick={() => setIsSidebarOpen(false)}
+              className="lg:hidden p-2 text-slate-400 hover:text-slate-600 hover:bg-slate-100 rounded-lg"
+            >
+              <X className="w-5 h-5" />
+            </button>
           </div>
           
           <nav className="space-y-2">
@@ -403,10 +448,11 @@ export default function Dashboard() {
                     navigate('/profile');
                   } else {
                     setActiveSection(item.id as Section);
+                    setIsSidebarOpen(false); // Close mobile sidebar on selection
                   }
                 }}
                 className={cn(
-                  "w-full flex items-center gap-3 px-4 py-3 rounded-xl font-medium transition-all",
+                  "w-full flex items-center gap-3 px-4 py-3 rounded-xl font-medium transition-all text-sm lg:text-base",
                   activeSection === item.id 
                     ? "bg-primary text-white shadow-lg shadow-primary/20" 
                     : "text-slate-600 hover:bg-slate-50"
@@ -422,7 +468,7 @@ export default function Dashboard() {
         <div className="mt-auto p-8 border-t border-slate-100">
           <button 
             onClick={logout}
-            className="w-full flex items-center gap-3 px-4 py-3 text-red-600 hover:bg-red-50 rounded-xl font-medium transition-colors"
+            className="w-full flex items-center gap-3 px-4 py-3 text-red-600 hover:bg-red-50 rounded-xl font-medium transition-colors text-sm lg:text-base"
           >
             <LogOut className="w-5 h-5" />
             Keluar
@@ -431,11 +477,20 @@ export default function Dashboard() {
       </aside>
 
       {/* Main Content */}
-      <main className="flex-grow p-8 lg:p-12 overflow-y-auto">
-        <header className="flex justify-between items-center mb-12">
-          <div>
-            <h1 className="text-3xl font-bold text-slate-900">Selamat Datang, {user?.displayName || 'Donatur Baik'}!</h1>
-            <p className="text-slate-500">Berikut adalah ringkasan kontribusi kebaikan Anda.</p>
+      <main className="flex-grow w-full min-h-screen pb-20">
+        <div className="p-4 sm:p-6 lg:p-12 max-w-[1600px] mx-auto w-full">
+        <header className="flex flex-col md:flex-row md:items-center justify-between gap-6 mb-8 lg:mb-12">
+          <div className="flex items-center gap-4">
+            <button 
+              onClick={() => setIsSidebarOpen(true)}
+              className="lg:hidden p-3 bg-white border border-slate-200 text-slate-600 hover:bg-slate-50 rounded-2xl shadow-md shadow-slate-100 transition-all active:scale-95 group"
+            >
+              <Menu className="w-6 h-6 group-hover:text-primary transition-colors" />
+            </button>
+            <div>
+              <h1 className="text-lg lg:text-3xl font-bold text-slate-900 line-clamp-1">Selamat Datang, {user?.displayName || 'Donatur Baik'}!</h1>
+              <p className="text-slate-500 text-[10px] lg:text-base">Menebar kebaikan, memanen keberkahan.</p>
+            </div>
           </div>
           <div className="flex items-center gap-4">
             <div className="relative hidden md:block">
@@ -459,40 +514,43 @@ export default function Dashboard() {
             animate={{ opacity: 1, y: 0 }}
             exit={{ opacity: 0, y: -10 }}
             transition={{ duration: 0.2 }}
+            className="w-full"
           >
             {activeSection === 'overview' && (
               <>
-                <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-6 mb-12">
+                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3 lg:gap-6 mb-8 lg:mb-12">
                   {stats.map((stat, i) => (
                     <motion.div
                       key={stat.label}
                       initial={{ opacity: 0, y: 20 }}
                       animate={{ opacity: 1, y: 0 }}
                       transition={{ delay: i * 0.1 }}
-                      className="bg-white p-6 rounded-3xl shadow-sm border border-slate-100"
+                      className="bg-white p-5 lg:p-6 rounded-2xl lg:rounded-3xl shadow-sm border border-slate-100 flex items-center gap-4 lg:block hover:shadow-md transition-shadow duration-300"
                     >
-                      <div className={`w-12 h-12 ${stat.bg} ${stat.color} rounded-2xl flex items-center justify-center mb-4`}>
-                        <stat.icon className="w-6 h-6" />
+                      <div className={`w-10 h-10 lg:w-12 lg:h-12 ${stat.bg} ${stat.color} rounded-xl lg:rounded-2xl flex items-center justify-center lg:mb-4 shrink-0 shadow-sm`}>
+                        <stat.icon className="w-5 h-5 lg:w-6 lg:h-6" />
                       </div>
-                      <div className="text-2xl font-bold text-slate-900">{stat.value}</div>
-                      <div className="text-sm text-slate-500 font-medium">{stat.label}</div>
+                      <div>
+                        <div className="text-lg lg:text-2xl font-bold text-slate-900 tracking-tight">{stat.value}</div>
+                        <div className="text-[10px] lg:text-xs text-slate-500 font-semibold uppercase tracking-wider mt-0.5">{stat.label}</div>
+                      </div>
                     </motion.div>
                   ))}
                 </div>
 
-                <div className="bg-white rounded-[2.5rem] shadow-sm border border-slate-100 overflow-hidden">
-                  <div className="p-8 border-b border-slate-100 flex justify-between items-center">
-                    <h3 className="text-xl font-bold text-slate-900">Riwayat Donasi Terbaru</h3>
+                <div className="bg-white rounded-[1.5rem] lg:rounded-[2.5rem] shadow-sm border border-slate-100 overflow-hidden">
+                  <div className="p-6 lg:p-8 border-b border-slate-100 flex justify-between items-center">
+                    <h3 className="text-lg lg:text-xl font-bold text-slate-900">Riwayat Donasi Terbaru</h3>
                     <button onClick={() => setActiveSection('donations')} className="text-primary font-bold text-sm hover:underline">Lihat Semua</button>
                   </div>
-                  <div className="overflow-x-auto">
-                    <table className="w-full text-left">
+                  <div className="overflow-x-auto scrollbar-hide">
+                    <table className="w-full text-left min-w-[600px]">
                       <thead>
-                        <tr className="bg-slate-50/50 text-slate-500 text-xs uppercase tracking-wider">
-                          <th className="px-8 py-4 font-bold">Program</th>
-                          <th className="px-8 py-4 font-bold">Tanggal</th>
-                          <th className="px-8 py-4 font-bold">Nominal</th>
-                          <th className="px-8 py-4 font-bold">Status</th>
+                        <tr className="bg-slate-50/50 text-slate-500 text-[10px] uppercase tracking-wider">
+                          <th className="px-6 lg:px-8 py-4 font-bold">Program</th>
+                          <th className="px-6 lg:px-8 py-4 font-bold">Tanggal</th>
+                          <th className="px-6 lg:px-8 py-4 font-bold">Nominal</th>
+                          <th className="px-6 lg:px-8 py-4 font-bold">Status</th>
                         </tr>
                       </thead>
                       <tbody className="divide-y divide-slate-100">
@@ -500,17 +558,17 @@ export default function Dashboard() {
                           const program = PROGRAMS.find(p => p.id === donation.programId);
                           return (
                             <tr key={donation.id} className="hover:bg-slate-50/50 transition-colors">
-                              <td className="px-8 py-5">
-                                <div className="font-bold text-slate-900">{program?.title}</div>
-                                <div className="text-xs text-slate-500">{program?.category}</div>
+                              <td className="px-6 lg:px-8 py-5 whitespace-nowrap">
+                                <div className="font-bold text-slate-900 text-sm lg:text-base">{program?.title}</div>
+                                <div className="text-[10px] lg:text-xs text-slate-500">{program?.category}</div>
                               </td>
-                              <td className="px-8 py-5 text-slate-600 text-sm">
+                              <td className="px-6 lg:px-8 py-5 text-slate-600 text-xs lg:text-sm whitespace-nowrap">
                                 {new Date(donation.timestamp).toLocaleDateString('id-ID', { day: 'numeric', month: 'long', year: 'numeric' })}
                               </td>
-                              <td className="px-8 py-5 font-bold text-slate-900">
+                              <td className="px-6 lg:px-8 py-5 font-bold text-slate-900 text-sm lg:text-base whitespace-nowrap">
                                 Rp {donation.amount.toLocaleString()}
                               </td>
-                              <td className="px-8 py-5">
+                              <td className="px-6 lg:px-8 py-5 whitespace-nowrap">
                                 <span className="inline-flex items-center px-3 py-1 rounded-full text-[10px] font-bold uppercase bg-green-100 text-green-700">
                                   Berhasil
                                 </span>
@@ -519,7 +577,7 @@ export default function Dashboard() {
                           );
                         }) : (
                           <tr>
-                            <td colSpan={4} className="px-8 py-12 text-center text-slate-500 italic">
+                            <td colSpan={4} className="px-6 lg:px-8 py-12 text-center text-slate-500 italic text-sm">
                               Belum ada riwayat donasi.
                             </td>
                           </tr>
@@ -532,42 +590,42 @@ export default function Dashboard() {
             )}
 
             {activeSection === 'donations' && (
-              <div className="space-y-8">
-                <div className="bg-white rounded-[2.5rem] shadow-sm border border-slate-100 overflow-hidden">
-                  <div className="p-8 border-b border-slate-100 flex justify-between items-center">
-                    <h2 className="text-xl font-bold text-slate-900">
+              <div className="space-y-6 lg:space-y-8">
+                <div className="bg-white rounded-[1.5rem] lg:rounded-[2.5rem] shadow-sm border border-slate-100 overflow-hidden">
+                  <div className="p-6 lg:p-8 border-b border-slate-100 flex justify-between items-center">
+                    <h2 className="text-lg lg:text-xl font-bold text-slate-900">
                       {userProfile?.role === 'admin' ? 'Semua Data Donasi' : 'Donasi Saya'}
                     </h2>
                   </div>
-                  <div className="overflow-x-auto">
-                    <table className="w-full text-left">
+                  <div className="overflow-x-auto scrollbar-hide">
+                    <table className="w-full text-left min-w-[800px]">
                       <thead>
                         <tr className="bg-slate-50">
-                          <th className="px-8 py-4 text-xs font-bold text-slate-500 uppercase tracking-wider">Tanggal</th>
-                          <th className="px-8 py-4 text-xs font-bold text-slate-500 uppercase tracking-wider">Donatur</th>
-                          <th className="px-8 py-4 text-xs font-bold text-slate-500 uppercase tracking-wider">Program</th>
-                          <th className="px-8 py-4 text-xs font-bold text-slate-500 uppercase tracking-wider">Jumlah</th>
-                          <th className="px-8 py-4 text-xs font-bold text-slate-500 uppercase tracking-wider">Status</th>
-                          <th className="px-8 py-4 text-xs font-bold text-slate-500 uppercase tracking-wider text-right">Aksi</th>
+                          <th className="px-6 lg:px-8 py-4 text-[10px] lg:text-xs font-bold text-slate-500 uppercase tracking-wider">Tanggal</th>
+                          <th className="px-6 lg:px-8 py-4 text-[10px] lg:text-xs font-bold text-slate-500 uppercase tracking-wider">Donatur</th>
+                          <th className="px-6 lg:px-8 py-4 text-[10px] lg:text-xs font-bold text-slate-500 uppercase tracking-wider">Program</th>
+                          <th className="px-6 lg:px-8 py-4 text-[10px] lg:text-xs font-bold text-slate-500 uppercase tracking-wider">Jumlah</th>
+                          <th className="px-6 lg:px-8 py-4 text-[10px] lg:text-xs font-bold text-slate-500 uppercase tracking-wider">Status</th>
+                          <th className="px-6 lg:px-8 py-4 text-[10px] lg:text-xs font-bold text-slate-500 uppercase tracking-wider text-right">Aksi</th>
                         </tr>
                       </thead>
                       <tbody className="divide-y divide-slate-100">
                         {donations.length > 0 ? donations.map((donation) => (
                           <tr key={donation.id} className="hover:bg-slate-50/50 transition-colors">
-                            <td className="px-8 py-4 text-sm text-slate-600">
+                            <td className="px-6 lg:px-8 py-4 text-xs lg:text-sm text-slate-600 whitespace-nowrap">
                               {new Date(donation.timestamp).toLocaleDateString('id-ID', { day: 'numeric', month: 'short', year: 'numeric' })}
                             </td>
-                            <td className="px-8 py-4">
-                              <div className="text-sm font-bold text-slate-900">{donation.donorName}</div>
+                            <td className="px-6 lg:px-8 py-4 whitespace-nowrap">
+                              <div className="text-xs lg:text-sm font-bold text-slate-900">{donation.donorName}</div>
                               <div className="text-[10px] text-slate-400 font-medium">{donation.phone}</div>
                             </td>
-                            <td className="px-8 py-4 text-sm font-bold text-slate-900 truncate max-w-[150px]">
+                            <td className="px-6 lg:px-8 py-4 text-xs lg:text-sm font-bold text-slate-900 truncate max-w-[150px] whitespace-nowrap">
                               {donation.programId}
                             </td>
-                            <td className="px-8 py-4 text-sm font-bold text-primary">
+                            <td className="px-6 lg:px-8 py-4 text-xs lg:text-sm font-bold text-primary whitespace-nowrap">
                               Rp {donation.amount.toLocaleString()}
                             </td>
-                            <td className="px-8 py-4">
+                            <td className="px-6 lg:px-8 py-4 whitespace-nowrap">
                               <span className={cn(
                                 "px-3 py-1 rounded-full text-[10px] font-bold uppercase tracking-wider",
                                 donation.status === 'completed' 
@@ -577,7 +635,7 @@ export default function Dashboard() {
                                 {donation.status === 'completed' ? 'Berhasil' : 'Tertunda'}
                               </span>
                             </td>
-                            <td className="px-8 py-4 text-right">
+                            <td className="px-6 lg:px-8 py-4 text-right whitespace-nowrap">
                               <div className="flex justify-end gap-2">
                                 <button 
                                   onClick={() => navigate(`/donation-confirmation/${donation.id}`)}
@@ -623,44 +681,44 @@ export default function Dashboard() {
                 </div>
 
                 {userProfile?.role !== 'admin' && (
-                  <div className="bg-white rounded-[2.5rem] shadow-sm border border-slate-100 overflow-hidden">
-                    <div className="p-8 border-b border-slate-100 flex items-center gap-3">
-                      <div className="w-10 h-10 bg-primary/10 rounded-xl flex items-center justify-center text-primary">
+                  <div className="bg-white rounded-[1.5rem] lg:rounded-[2.5rem] shadow-sm border border-slate-100 overflow-hidden">
+                    <div className="p-6 lg:p-8 border-b border-slate-100 flex items-center gap-3">
+                      <div className="w-10 h-10 bg-primary/10 rounded-xl flex items-center justify-center text-primary shrink-0">
                         <HandHeart className="w-5 h-5" />
                       </div>
                       <div>
-                        <h2 className="text-xl font-bold text-slate-900">Donasi Melalui Link Saya</h2>
-                        <p className="text-xs text-slate-500 font-medium uppercase tracking-widest mt-0.5">Relawan Program</p>
+                        <h2 className="text-lg lg:text-xl font-bold text-slate-900">Donasi Melalui Link Saya</h2>
+                        <p className="text-[10px] text-slate-500 font-medium uppercase tracking-widest mt-0.5">Relawan Program</p>
                       </div>
                     </div>
-                    <div className="overflow-x-auto">
-                      <table className="w-full text-left">
+                    <div className="overflow-x-auto scrollbar-hide">
+                      <table className="w-full text-left min-w-[700px]">
                         <thead>
                           <tr className="bg-slate-50">
-                            <th className="px-8 py-4 text-xs font-bold text-slate-500 uppercase tracking-wider">Tanggal</th>
-                            <th className="px-8 py-4 text-xs font-bold text-slate-500 uppercase tracking-wider">Donatur</th>
-                            <th className="px-8 py-4 text-xs font-bold text-slate-500 uppercase tracking-wider">Program</th>
-                            <th className="px-8 py-4 text-xs font-bold text-slate-500 uppercase tracking-wider">Jumlah</th>
-                            <th className="px-8 py-4 text-xs font-bold text-slate-500 uppercase tracking-wider">Status</th>
+                            <th className="px-6 lg:px-8 py-4 text-[10px] lg:text-xs font-bold text-slate-500 uppercase tracking-wider">Tanggal</th>
+                            <th className="px-6 lg:px-8 py-4 text-[10px] lg:text-xs font-bold text-slate-500 uppercase tracking-wider">Donatur</th>
+                            <th className="px-6 lg:px-8 py-4 text-[10px] lg:text-xs font-bold text-slate-500 uppercase tracking-wider">Program</th>
+                            <th className="px-6 lg:px-8 py-4 text-[10px] lg:text-xs font-bold text-slate-500 uppercase tracking-wider">Jumlah</th>
+                            <th className="px-6 lg:px-8 py-4 text-[10px] lg:text-xs font-bold text-slate-500 uppercase tracking-wider">Status</th>
                           </tr>
                         </thead>
                         <tbody className="divide-y divide-slate-100">
                           {volunteerDonations.length > 0 ? volunteerDonations.map((donation) => (
                             <tr key={donation.id} className="hover:bg-slate-50/50 transition-colors">
-                              <td className="px-8 py-4 text-sm text-slate-600">
+                              <td className="px-6 lg:px-8 py-4 text-xs lg:text-sm text-slate-600 whitespace-nowrap">
                                 {new Date(donation.timestamp).toLocaleDateString('id-ID', { day: 'numeric', month: 'short', year: 'numeric' })}
                               </td>
-                              <td className="px-8 py-4">
-                                <div className="text-sm font-bold text-slate-900">{donation.donorName}</div>
+                              <td className="px-6 lg:px-8 py-4 whitespace-nowrap">
+                                <div className="text-xs lg:text-sm font-bold text-slate-900">{donation.donorName}</div>
                                 <div className="text-[10px] text-slate-400 font-medium">Melalui Link Relawan</div>
                               </td>
-                              <td className="px-8 py-4 text-sm font-bold text-slate-900 truncate max-w-[150px]">
+                              <td className="px-6 lg:px-8 py-4 text-xs lg:text-sm font-bold text-slate-900 truncate max-w-[150px] whitespace-nowrap">
                                 {donation.programId}
                               </td>
-                              <td className="px-8 py-4 text-sm font-bold text-primary">
+                              <td className="px-6 lg:px-8 py-4 text-xs lg:text-sm font-bold text-primary whitespace-nowrap">
                                 Rp {donation.amount.toLocaleString()}
                               </td>
-                              <td className="px-8 py-4">
+                              <td className="px-6 lg:px-8 py-4 whitespace-nowrap">
                                 <span className={cn(
                                   "px-3 py-1 rounded-full text-[10px] font-bold uppercase tracking-wider",
                                   donation.status === 'completed' 
@@ -673,7 +731,7 @@ export default function Dashboard() {
                             </tr>
                           )) : (
                             <tr>
-                              <td colSpan={5} className="px-8 py-12 text-center text-slate-500 italic">
+                              <td colSpan={5} className="px-6 lg:px-8 py-12 text-center text-slate-500 italic text-sm">
                                 Belum ada donasi yang masuk melalui link Anda. Ayo bagikan lebih banyak!
                               </td>
                             </tr>
@@ -693,25 +751,25 @@ export default function Dashboard() {
             ])}
 
             {activeSection === 'gallery' && (
-              <div className="space-y-8">
-                <div className="flex justify-between items-center">
-                  <h2 className="text-2xl font-bold text-slate-900">Galeri Foto</h2>
-                  <div className="flex gap-4">
+              <div className="space-y-6 lg:space-y-8">
+                <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
+                  <h2 className="text-xl lg:text-2xl font-bold text-slate-900">Galeri Foto</h2>
+                  <div className="flex flex-wrap gap-2 lg:gap-4 w-full sm:w-auto">
                     <button 
                       onClick={() => setShowFeaturedSettings(!showFeaturedSettings)}
                       className={cn(
-                        "px-6 py-2.5 rounded-full font-bold text-sm flex items-center gap-2 transition-all",
+                        "flex-grow sm:flex-grow-0 px-4 lg:px-6 py-2.5 rounded-full font-bold text-xs lg:text-sm flex items-center justify-center gap-2 transition-all",
                         showFeaturedSettings 
                           ? "bg-amber-100 text-amber-600 border border-amber-200" 
                           : "bg-white text-slate-600 border border-slate-200 hover:border-primary hover:text-primary"
                       )}
                     >
                       <Star className={cn("w-4 h-4", showFeaturedSettings && "fill-current")} />
-                      {showFeaturedSettings ? 'Sembunyikan Pengaturan Landing' : 'Atur Galeri Landing'}
+                      {showFeaturedSettings ? 'Sembunyikan' : 'Atur Landing'}
                     </button>
                     <button 
                       onClick={() => handleOpenModal()}
-                      className="bg-primary text-white px-6 py-2.5 rounded-full font-bold text-sm flex items-center gap-2 hover:bg-primary/90 transition-all shadow-lg shadow-primary/20"
+                      className="flex-grow sm:flex-grow-0 bg-primary text-white px-4 lg:px-6 py-2.5 rounded-full font-bold text-xs lg:text-sm flex items-center justify-center gap-2 hover:bg-primary/90 transition-all shadow-lg shadow-primary/20"
                     >
                       <Plus className="w-4 h-4" />
                       Tambah Foto
@@ -723,22 +781,22 @@ export default function Dashboard() {
                   <motion.div 
                     initial={{ opacity: 0, y: -20 }}
                     animate={{ opacity: 1, y: 0 }}
-                    className="bg-amber-50 rounded-[2.5rem] p-8 border border-amber-100 space-y-6"
+                    className="bg-amber-50 rounded-[1.5rem] lg:rounded-[2.5rem] p-6 lg:p-8 border border-amber-100 space-y-6"
                   >
-                    <div className="flex flex-col md:flex-row md:items-end gap-6">
+                    <div className="flex flex-col lg:flex-row lg:items-end gap-4 lg:gap-6">
                       <div className="flex-grow space-y-2">
-                        <label className="text-sm font-bold text-amber-800 ml-1">Judul Blok Galeri di Landing Page</label>
+                        <label className="text-xs font-bold text-amber-800 ml-1">Judul Blok Galeri di Landing Page</label>
                         <input 
                           type="text"
                           value={galleryTitle}
                           onChange={(e) => setGalleryTitle(e.target.value)}
                           placeholder="Contoh: Galeri Kegiatan Kami"
-                          className="w-full bg-white border border-amber-200 rounded-2xl px-6 py-4 font-bold text-slate-900 focus:ring-2 focus:ring-amber-500 outline-none transition-all shadow-sm"
+                          className="w-full bg-white border border-amber-200 rounded-xl lg:rounded-2xl px-4 lg:px-6 py-3 lg:py-4 font-bold text-slate-900 focus:ring-2 focus:ring-amber-500 outline-none transition-all shadow-sm text-sm"
                         />
                       </div>
                       <button 
                         onClick={handleUpdateGalleryTitle}
-                        className="bg-amber-600 text-white px-8 py-4 rounded-2xl font-bold hover:bg-amber-700 transition-all shadow-lg shadow-amber-600/20 whitespace-nowrap"
+                        className="bg-amber-600 text-white px-8 py-3 lg:py-4 rounded-xl lg:rounded-2xl font-bold hover:bg-amber-700 transition-all shadow-lg shadow-amber-600/20 whitespace-nowrap text-sm"
                       >
                         Simpan Judul
                       </button>
@@ -753,79 +811,80 @@ export default function Dashboard() {
                   </motion.div>
                 )}
 
-                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+                <div className="grid grid-cols-2 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-4 gap-4 lg:gap-6">
                   {gallery.length > 0 ? gallery.map((item) => {
                     const isFeatured = featuredGallery.imageUrls?.includes(item.imageUrl);
                     return (
                       <motion.div 
                         key={item.id}
                         layout
-                        initial={{ opacity: 0, scale: 0.9 }}
+                        initial={{ opacity: 0, scale: 0.95 }}
                         animate={{ opacity: 1, scale: 1 }}
+                        whileHover={{ y: -4 }}
                         className={cn(
-                          "group bg-white rounded-3xl overflow-hidden shadow-sm border transition-all duration-300",
-                          isFeatured ? "border-amber-200 shadow-amber-100" : "border-slate-100"
+                          "group bg-white rounded-2xl lg:rounded-3xl overflow-hidden shadow-sm border transition-all duration-300",
+                          isFeatured ? "border-amber-200 ring-2 ring-amber-100/50" : "border-slate-100"
                         )}
                       >
-                        <div className="relative aspect-square overflow-hidden">
+                        <div className="relative aspect-square overflow-hidden bg-slate-100">
                           <img 
                             src={item.imageUrl} 
-                            className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500" 
+                            className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" 
                             alt={item.title}
                             referrerPolicy="no-referrer"
                           />
                           
                           {isFeatured && (
-                            <div className="absolute top-4 left-4 z-10">
-                              <span className="bg-white/90 backdrop-blur-sm text-amber-600 text-[10px] font-black px-3 py-1 rounded-full shadow-lg border border-amber-100 flex items-center gap-1">
-                                <Star className="w-3 h-3 fill-current" />
-                                UNGGULAN
+                            <div className="absolute top-3 left-3 z-10">
+                              <span className="bg-amber-400 text-white text-[9px] font-black px-2 py-1 rounded-full shadow-md flex items-center gap-1 leading-none uppercase">
+                                <Star className="w-2.5 h-2.5 fill-current" />
+                                Unggulan
                               </span>
                             </div>
                           )}
 
-                          <div className="absolute inset-0 bg-slate-900/40 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center gap-2">
+                          <div className="absolute inset-0 bg-slate-900/40 opacity-0 group-hover:opacity-100 transition-all duration-300 flex items-center justify-center gap-2">
                             <button 
                               onClick={() => handleToggleFeatured(item.imageUrl)}
                               className={cn(
-                                "p-3 rounded-full transition-all transform translate-y-4 group-hover:translate-y-0",
-                                isFeatured ? "bg-amber-500 text-white" : "bg-white text-slate-900 hover:bg-primary hover:text-white"
+                                "p-2 rounded-full transition-all transform translate-y-2 group-hover:translate-y-0",
+                                isFeatured ? "bg-amber-500 text-white" : "bg-white text-slate-900 hover:bg-amber-500 hover:text-white"
                               )}
                               title={isFeatured ? 'Hapus dari Landing' : 'Tampilkan di Landing'}
                             >
-                              <Star className={cn("w-5 h-5", isFeatured && "fill-current")} />
+                              <Star className={cn("w-4 h-4", isFeatured && "fill-current")} />
                             </button>
                             <button 
                               onClick={() => setPreviewImage(item.imageUrl)}
-                              className="p-3 bg-white rounded-full text-slate-900 hover:bg-primary hover:text-white transition-all transform translate-y-4 group-hover:translate-y-0"
+                              className="p-2 bg-white rounded-full text-slate-900 hover:bg-primary hover:text-white transition-all transform translate-y-2 group-hover:translate-y-0 shadow-lg"
                               title="Lihat Full Size"
                             >
-                              <Maximize2 className="w-5 h-5" />
+                              <Maximize2 className="w-4 h-4" />
                             </button>
                             <button 
                               onClick={() => handleOpenModal(item)}
-                              className="p-3 bg-white rounded-full text-slate-900 hover:bg-primary hover:text-white transition-all transform translate-y-4 group-hover:translate-y-0 delay-75"
+                              className="p-2 bg-white rounded-full text-slate-900 hover:bg-primary hover:text-white transition-all transform translate-y-2 group-hover:translate-y-0 shadow-lg"
                               title="Edit"
                             >
-                              <Edit2 className="w-5 h-5" />
+                              <Edit2 className="w-4 h-4" />
                             </button>
                             <button 
                               onClick={() => handleDelete(item.id)}
-                              className="p-3 bg-white rounded-full text-red-500 hover:bg-red-500 hover:text-white transition-all transform translate-y-4 group-hover:translate-y-0 delay-150"
+                              className="p-2 bg-white rounded-full text-red-500 hover:bg-red-500 hover:text-white transition-all transform translate-y-2 group-hover:translate-y-0 shadow-lg"
                               title="Hapus"
                             >
-                              <Trash2 className="w-5 h-5" />
+                              <Trash2 className="w-4 h-4" />
                             </button>
                           </div>
                         </div>
-                        <div className="p-5">
-                          <h3 className="font-bold text-slate-900 truncate">{item.title || 'Tanpa Judul'}</h3>
-                          <p className="text-xs text-slate-500 truncate mt-1">{item.description || 'Tidak ada deskripsi'}</p>
+                        <div className="p-4 lg:p-5">
+                          <h3 className="font-bold text-slate-900 text-sm lg:text-base truncate tracking-tight">{item.title || 'Tanpa Judul'}</h3>
+                          <p className="text-[10px] lg:text-xs text-slate-500 truncate mt-1 font-medium">{item.description || 'Tidak ada deskripsi'}</p>
                         </div>
                       </motion.div>
                     );
                   }) : (
-                    <div className="col-span-full py-20 text-center bg-white rounded-[2.5rem] border border-dashed border-slate-200">
+                    <div className="col-span-full py-20 text-center bg-white rounded-[1.5rem] lg:rounded-[2.5rem] border border-dashed border-slate-200">
                       <ImageIcon className="w-16 h-16 text-slate-200 mx-auto mb-4" />
                       <p className="text-slate-500 font-medium">Belum ada foto di galeri.</p>
                     </div>
@@ -860,21 +919,19 @@ export default function Dashboard() {
             ])}
 
             {activeSection === 'volunteer' && (
-              <div className="space-y-8">
-                <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
-                  <div>
-                    <h2 className="text-2xl font-bold text-slate-900 border-l-4 border-primary pl-4">Pusat Relawan</h2>
-                    <p className="text-slate-500 mt-1">Kami sangat berterima kasih atas bantuan Anda menyebarkan program kebaikan ini.</p>
-                  </div>
+              <div className="space-y-6 lg:space-y-8">
+                <div className="flex flex-col gap-2">
+                  <h2 className="text-xl lg:text-2xl font-bold text-slate-900 border-l-4 border-primary pl-4">Pusat Relawan</h2>
+                  <p className="text-xs lg:text-sm text-slate-500">Bantu sebarkan program kebaikan ini ke jaringan Anda.</p>
                 </div>
 
-                <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
+                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 lg:gap-8">
                   {campaigns.filter(c => c.status === 'active').map((campaign) => (
                     <motion.div 
                       key={campaign.id}
                       initial={{ opacity: 0, y: 20 }}
                       animate={{ opacity: 1, y: 0 }}
-                      className="bg-white rounded-[2.5rem] border border-slate-100 shadow-sm overflow-hidden flex flex-col group hover:shadow-xl hover:shadow-primary/5 transition-all duration-500"
+                      className="bg-white rounded-[1.5rem] lg:rounded-[2.5rem] border border-slate-100 shadow-sm overflow-hidden flex flex-col group hover:shadow-xl hover:shadow-primary/5 transition-all duration-500"
                     >
                       <div className="aspect-video relative overflow-hidden">
                         <img 
@@ -882,19 +939,19 @@ export default function Dashboard() {
                           alt={campaign.title}
                           className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700"
                         />
-                        <div className="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent flex items-bottom p-6 flex-col justify-end">
-                           <span className="bg-primary text-white px-3 py-1 rounded-full text-[10px] font-bold uppercase tracking-widest w-fit mb-2">
+                        <div className="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent flex items-bottom p-4 lg:p-6 flex-col justify-end">
+                           <span className="bg-primary text-white px-2 lg:px-3 py-1 rounded-full text-[8px] lg:text-[10px] font-bold uppercase tracking-widest w-fit mb-2">
                              Materi Aktif
                            </span>
                         </div>
                       </div>
-                      <div className="p-8 flex-grow flex flex-col">
-                        <h3 className="text-lg font-bold text-slate-900 mb-6 leading-tight line-clamp-2 min-h-[3.5rem]">{campaign.title}</h3>
+                      <div className="p-6 lg:p-8 flex-grow flex flex-col">
+                        <h3 className="text-base lg:text-lg font-bold text-slate-900 mb-4 lg:mb-6 leading-tight line-clamp-2 min-h-[2.5rem] lg:min-h-[3.5rem]">{campaign.title}</h3>
                         
                         <div className="space-y-4 flex-grow">
                           <div className="space-y-2">
-                             <div className="flex items-center justify-between bg-slate-50 px-4 py-2 rounded-t-2xl border-b border-white">
-                               <label className="text-[10px] font-bold text-slate-400 uppercase tracking-widest">Copywriting Share</label>
+                             <div className="flex items-center justify-between bg-slate-50 px-4 py-2 rounded-t-xl lg:rounded-t-2xl border-b border-white">
+                               <label className="text-[9px] lg:text-[10px] font-bold text-slate-400 uppercase tracking-widest">Copywriting Share</label>
                                <button 
                                  onClick={() => {
                                    const campaignUrl = `${window.location.origin}/donate/${campaign.id}?ref=${user?.uid}`;
@@ -909,41 +966,40 @@ export default function Dashboard() {
                                </button>
                              </div>
                              <textarea 
-                               readOnly
-                               className="w-full bg-slate-50/50 border border-slate-100 rounded-b-2xl px-4 py-3 text-xs text-slate-500 h-32 outline-none resize-none leading-relaxed"
-                               value={campaign.copywriting || `Ayo bantu program "${campaign.title}" di Mushaff Indonesia. Setiap kontribusi Anda sangat berarti untuk umat.\n\nSimak selengkapnya: ${window.location.origin}/donate/${campaign.id}?ref=${user?.uid}`}
+                                readOnly
+                                className="w-full bg-slate-50/50 border border-slate-100 rounded-b-xl lg:rounded-b-2xl px-4 py-3 text-[9px] sm:text-[10px] lg:text-xs text-slate-500 h-28 lg:h-32 outline-none resize-none leading-relaxed"
+                                value={campaign.copywriting || `Ayo bantu program "${campaign.title}" di Mushaff Indonesia. Setiap kontribusi Anda sangat berarti untuk umat.\n\nSimak selengkapnya: ${window.location.origin}/donate/${campaign.id}?ref=${user?.uid}`}
                              />
                           </div>
                         </div>
 
-                        <div className="grid grid-cols-2 gap-3 mt-8">
+                        <div className="grid grid-cols-2 gap-3 mt-6 lg:mt-8">
                           <button 
                             onClick={() => {
                               const campaignUrl = `${window.location.origin}/donate/${campaign.id}?ref=${user?.uid}`;
                               const text = campaign.copywriting || `Ayo bantu program "${campaign.title}" di Mushaff Indonesia.`;
                               window.open(`https://wa.me/?text=${encodeURIComponent(text + '\n\n' + campaignUrl)}`, '_blank');
                             }}
-                            className="bg-[#25D366] text-white py-3 rounded-2xl font-bold text-[10px] uppercase tracking-widest flex items-center justify-center gap-2 hover:opacity-90 transition-all"
+                            className="bg-[#25D366] text-white py-3 rounded-xl lg:rounded-2xl font-bold text-[9px] lg:text-[10px] uppercase tracking-widest flex items-center justify-center gap-2 hover:opacity-90 transition-all"
                           >
                             <Share2 className="w-3.5 h-3.5" />
                             WhatsApp
                           </button>
                           <button 
                             onClick={() => navigate(`/donate/${campaign.id}?ref=${user?.uid}`)}
-                            className="bg-slate-900 text-white py-3 rounded-2xl font-bold text-[10px] uppercase tracking-widest flex items-center justify-center gap-2 hover:bg-slate-800 transition-all"
+                            className="bg-slate-900 text-white py-3 rounded-xl lg:rounded-2xl font-bold text-[9px] lg:text-[10px] uppercase tracking-widest flex items-center justify-center gap-2 hover:bg-slate-800 transition-all text-center"
                           >
                             <ExternalLink className="w-3.5 h-3.5" />
-                            Lihat Penggalangan
+                            Detail
                           </button>
                         </div>
                       </div>
                     </motion.div>
                   ))}
                   {campaigns.filter(c => c.status === 'active').length === 0 && (
-                    <div className="col-span-full py-20 text-center bg-white rounded-[2.5rem] border border-dashed border-slate-200">
-                      <HandHeart className="w-16 h-16 text-slate-200 mx-auto mb-4" />
-                      <p className="text-slate-500 font-medium">Belum ada materi penggalangan aktif untuk dibagikan.</p>
-                      <p className="text-xs text-slate-400 mt-1 uppercase tracking-widest font-bold">Terima kasih atas semangat Anda!</p>
+                    <div className="col-span-full py-12 lg:py-20 text-center bg-white rounded-[1.5rem] lg:rounded-[2.5rem] border border-dashed border-slate-200">
+                      <HandHeart className="w-12 lg:w-16 h-12 lg:h-16 text-slate-200 mx-auto mb-4" />
+                      <p className="text-slate-500 font-medium text-sm lg:text-base">Belum ada materi aktif.</p>
                     </div>
                   )}
                 </div>
@@ -953,48 +1009,48 @@ export default function Dashboard() {
             {activeSection === 'settings' && (
               <div className="max-w-4xl mx-auto">
                 <div className="bg-white rounded-[2.5rem] shadow-sm border border-slate-100 overflow-hidden">
-                  <div className="p-8 border-b border-slate-100 flex justify-between items-center">
+                    <div className="p-6 lg:p-8 border-b border-slate-100 flex flex-col sm:flex-row gap-4 sm:justify-between sm:items-center">
                     <div>
-                      <h2 className="text-xl font-bold text-slate-900">Pengaturan Website</h2>
-                      <p className="text-sm text-slate-500">Kelola informasi publik dan konfigurasi sistem website Anda.</p>
+                      <h2 className="text-lg lg:text-xl font-bold text-slate-900">Pengaturan Website</h2>
+                      <p className="text-xs lg:text-sm text-slate-500">Kelola informasi publik dan konfigurasi sistem website.</p>
                     </div>
                     <button 
                       onClick={handleSaveSettings}
-                      className="bg-primary text-white px-8 py-3 rounded-2xl font-bold hover:bg-primary/90 transition-all shadow-lg shadow-primary/20 flex items-center gap-2"
+                      className="bg-primary text-white px-6 lg:px-8 py-3 rounded-xl lg:rounded-2xl font-bold hover:bg-primary/90 transition-all shadow-lg shadow-primary/20 flex items-center justify-center gap-2 text-sm"
                     >
                       <Save className="w-4 h-4" />
-                      Simpan Perubahan
+                      Simpan
                     </button>
                   </div>
                   
-                  <div className="p-8 space-y-8">
+                  <div className="p-6 lg:p-8 space-y-8">
                     {/* General Settings */}
                     <div className="space-y-6">
-                      <h3 className="text-sm font-black text-slate-900 uppercase tracking-widest border-l-4 border-primary pl-4">Informasi Dasar</h3>
+                      <h3 className="text-xs lg:text-sm font-black text-slate-900 uppercase tracking-widest border-l-4 border-primary pl-4">Informasi Dasar</h3>
                       
-                      <div className="grid md:grid-cols-2 gap-6">
+                      <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                         <div className="space-y-2">
-                          <label className="text-xs font-bold text-slate-500 uppercase tracking-wider ml-1">Nama Website</label>
+                          <label className="text-[10px] lg:text-xs font-bold text-slate-500 uppercase tracking-wider ml-1">Nama Website</label>
                           <input 
                             type="text"
                             value={siteSettingsForm.site_name}
                             onChange={(e) => setSiteSettingsForm({ ...siteSettingsForm, site_name: e.target.value })}
                             placeholder="Contoh: Mushaff Indonesia"
-                            className="w-full bg-slate-50 border border-slate-200 rounded-2xl px-6 py-4 font-bold text-slate-900 focus:ring-2 focus:ring-primary outline-none transition-all"
+                            className="w-full bg-slate-50 border border-slate-200 rounded-xl lg:rounded-2xl px-4 lg:px-6 py-3 lg:py-4 font-bold text-slate-900 focus:ring-2 focus:ring-primary outline-none transition-all text-sm"
                           />
                         </div>
                         <div className="space-y-2">
-                          <label className="text-xs font-bold text-slate-500 uppercase tracking-wider ml-1">Logo Website</label>
-                          <div className="flex gap-4">
-                            <div className="flex-grow space-y-3">
+                          <label className="text-[10px] lg:text-xs font-bold text-slate-500 uppercase tracking-wider ml-1">Logo Website</label>
+                          <div className="flex flex-col sm:flex-row gap-4">
+                            <div className="flex-grow space-y-3 order-2 sm:order-1">
                               <input 
                                 type="text"
                                 value={siteSettingsForm.site_logo}
                                 onChange={(e) => setSiteSettingsForm({ ...siteSettingsForm, site_logo: e.target.value })}
                                 placeholder="URL Logo"
-                                className="w-full bg-slate-50 border border-slate-200 rounded-2xl px-6 py-4 font-bold text-slate-900 focus:ring-2 focus:ring-primary outline-none transition-all"
+                                className="w-full bg-slate-50 border border-slate-200 rounded-xl lg:rounded-2xl px-4 lg:px-6 py-3 lg:py-4 font-bold text-slate-900 focus:ring-2 focus:ring-primary outline-none transition-all text-sm"
                               />
-                              <label className="inline-flex items-center gap-2 bg-white border border-slate-200 rounded-full px-4 py-2 text-xs font-bold text-slate-600 hover:border-primary hover:text-primary transition-all cursor-pointer">
+                              <label className="inline-flex items-center gap-2 bg-white border border-slate-200 rounded-full px-4 py-2 text-[10px] font-bold text-slate-600 hover:border-primary hover:text-primary transition-all cursor-pointer">
                                 <Upload className="w-3 h-3" />
                                 {isUploading ? 'Mengunggah...' : 'Upload Logo Baru'}
                                 <input 
@@ -1006,7 +1062,7 @@ export default function Dashboard() {
                                 />
                               </label>
                             </div>
-                            <div className="w-24 h-24 bg-white border border-slate-200 rounded-3xl flex items-center justify-center overflow-hidden p-3 shrink-0 shadow-sm">
+                            <div className="w-20 h-20 lg:w-24 lg:h-24 bg-white border border-slate-200 rounded-2xl lg:rounded-3xl flex items-center justify-center overflow-hidden p-2 lg:p-3 shrink-0 shadow-sm order-1 sm:order-2 self-center sm:self-auto">
                               <img src={siteSettingsForm.site_logo || '/logo.png'} className="w-full h-full object-contain" alt="Logo Pre" referrerPolicy="no-referrer" />
                             </div>
                           </div>
@@ -1014,51 +1070,51 @@ export default function Dashboard() {
                       </div>
 
                       <div className="space-y-2">
-                        <label className="text-xs font-bold text-slate-500 uppercase tracking-wider ml-1">Deskripsi Web / Slogan</label>
+                        <label className="text-[10px] lg:text-xs font-bold text-slate-500 uppercase tracking-wider ml-1">Deskripsi Web / Slogan</label>
                         <textarea 
                           value={siteSettingsForm.site_description}
                           onChange={(e) => setSiteSettingsForm({ ...siteSettingsForm, site_description: e.target.value })}
                           placeholder="Jelaskan secara singkat tentang website ini..."
-                          className="w-full bg-slate-50 border border-slate-200 rounded-2xl px-6 py-4 font-medium text-slate-900 focus:ring-2 focus:ring-primary outline-none transition-all h-32"
+                          className="w-full bg-slate-50 border border-slate-200 rounded-xl lg:rounded-2xl px-4 lg:px-6 py-3 lg:py-4 font-medium text-slate-900 focus:ring-2 focus:ring-primary outline-none transition-all h-32 text-sm"
                         />
                       </div>
                     </div>
 
                     {/* Contact Info */}
                     <div className="space-y-6 pt-6 border-t border-slate-100">
-                      <h3 className="text-sm font-black text-slate-900 uppercase tracking-widest border-l-4 border-accent pl-4">Informasi Kontak</h3>
+                      <h3 className="text-[10px] lg:text-sm font-black text-slate-900 uppercase tracking-widest border-l-4 border-accent pl-4">Informasi Kontak</h3>
                       
-                      <div className="grid md:grid-cols-2 gap-6">
+                      <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                         <div className="space-y-2">
-                          <label className="text-xs font-bold text-slate-500 uppercase tracking-wider ml-1">Email Kontak</label>
+                          <label className="text-[10px] lg:text-xs font-bold text-slate-500 uppercase tracking-wider ml-1">Email Kontak</label>
                           <input 
                             type="email"
                             value={siteSettingsForm.contact_email}
                             onChange={(e) => setSiteSettingsForm({ ...siteSettingsForm, contact_email: e.target.value })}
                             placeholder="admin@mushaff.org"
-                            className="w-full bg-slate-50 border border-slate-200 rounded-2xl px-6 py-4 font-bold text-slate-900 focus:ring-2 focus:ring-primary outline-none transition-all"
+                            className="w-full bg-slate-50 border border-slate-200 rounded-xl lg:rounded-2xl px-4 lg:px-6 py-3 lg:py-4 font-bold text-slate-900 focus:ring-2 focus:ring-primary outline-none transition-all text-sm"
                           />
                         </div>
                         <div className="space-y-2">
-                          <label className="text-xs font-bold text-slate-500 uppercase tracking-wider ml-1">Nomor Telepon/WA</label>
+                          <label className="text-[10px] lg:text-xs font-bold text-slate-500 uppercase tracking-wider ml-1">Nomor Telepon/WA</label>
                           <input 
                             type="text"
                             value={siteSettingsForm.contact_phone}
                             onChange={(e) => setSiteSettingsForm({ ...siteSettingsForm, contact_phone: e.target.value })}
                             placeholder="+62 812..."
-                            className="w-full bg-slate-50 border border-slate-200 rounded-2xl px-6 py-4 font-bold text-slate-900 focus:ring-2 focus:ring-primary outline-none transition-all"
+                            className="w-full bg-slate-50 border border-slate-200 rounded-xl lg:rounded-2xl px-4 lg:px-6 py-3 lg:py-4 font-bold text-slate-900 focus:ring-2 focus:ring-primary outline-none transition-all text-sm"
                           />
                         </div>
                       </div>
 
                       <div className="space-y-2">
-                        <label className="text-xs font-bold text-slate-500 uppercase tracking-wider ml-1">Alamat Kantor</label>
+                        <label className="text-[10px] lg:text-xs font-bold text-slate-500 uppercase tracking-wider ml-1">Alamat Kantor</label>
                         <input 
                           type="text"
                           value={siteSettingsForm.address}
                           onChange={(e) => setSiteSettingsForm({ ...siteSettingsForm, address: e.target.value })}
                           placeholder="Alamat lengkap..."
-                          className="w-full bg-slate-50 border border-slate-200 rounded-2xl px-6 py-4 font-medium text-slate-900 focus:ring-2 focus:ring-primary outline-none transition-all"
+                          className="w-full bg-slate-50 border border-slate-200 rounded-xl lg:rounded-2xl px-4 lg:px-6 py-3 lg:py-4 font-medium text-slate-900 focus:ring-2 focus:ring-primary outline-none transition-all text-sm"
                         />
                       </div>
                     </div>
@@ -1066,10 +1122,10 @@ export default function Dashboard() {
                     <div className="text-right pt-4">
                       <button 
                         onClick={handleSaveSettings}
-                        className="bg-primary text-white px-10 py-4 rounded-2xl font-bold hover:bg-primary/90 transition-all shadow-lg shadow-primary/20 flex items-center gap-2 ml-auto"
+                        className="w-full sm:w-auto bg-primary text-white px-8 lg:px-10 py-3 lg:py-4 rounded-xl lg:rounded-2xl font-bold hover:bg-primary/90 transition-all shadow-lg shadow-primary/20 flex items-center justify-center gap-2 ml-auto"
                       >
                         <Save className="w-5 h-5" />
-                        Simpan Semua Perubahan
+                        Simpan Semua
                       </button>
                     </div>
                   </div>
@@ -1078,80 +1134,101 @@ export default function Dashboard() {
             )}
           </motion.div>
         </AnimatePresence>
+        </div>
       </main>
 
-      {/* CRUD Modal */}
       {isModalOpen && (
-        <div className="fixed inset-0 bg-slate-900/50 backdrop-blur-sm z-50 flex items-center justify-center p-4">
+        <div className="fixed inset-0 bg-slate-900/60 backdrop-blur-md z-50 flex items-center justify-center p-4">
           <motion.div 
-            initial={{ opacity: 0, scale: 0.95 }}
-            animate={{ opacity: 1, scale: 1 }}
-            className="bg-white rounded-[2.5rem] w-full max-w-lg overflow-hidden shadow-2xl"
+            initial={{ opacity: 0, scale: 0.95, y: 20 }}
+            animate={{ opacity: 1, scale: 1, y: 0 }}
+            className="bg-white rounded-2xl lg:rounded-3xl w-full max-w-lg overflow-hidden shadow-2xl border border-slate-100"
           >
-            <div className="p-8 border-b border-slate-100 flex justify-between items-center">
-              <h3 className="text-xl font-bold text-slate-900">
+            <div className="px-6 py-5 lg:px-8 lg:py-6 border-b border-slate-100 flex justify-between items-center bg-slate-50/50">
+              <h3 className="text-lg lg:text-xl font-bold text-slate-900">
                 {editingItem ? 'Edit Data' : 'Tambah Data Baru'}
               </h3>
-              <button onClick={() => setIsModalOpen(false)} className="p-2 hover:bg-slate-50 rounded-full transition-colors">
-                <X className="w-5 h-5 text-slate-400" />
+              <button 
+                onClick={() => setIsModalOpen(false)} 
+                className="p-2 hover:bg-white rounded-full transition-all border border-transparent hover:border-slate-200 shadow-sm"
+              >
+                <X className="w-5 h-5 text-slate-400 font-bold" />
               </button>
             </div>
-            <form onSubmit={handleSave} className="p-8 space-y-4 max-h-[70vh] overflow-y-auto">
+            <form onSubmit={handleSave} className="p-6 lg:p-8 space-y-5 max-h-[75vh] overflow-y-auto scrollbar-hide">
               {activeSection === 'articles' && (
-                <>
-                  <input 
-                    className="w-full bg-slate-50 border border-slate-200 rounded-xl px-4 py-3 focus:ring-2 focus:ring-primary outline-none" 
-                    placeholder="Judul Artikel"
-                    value={formData.title || ''}
-                    onChange={e => setFormData({...formData, title: e.target.value})}
-                    required
-                  />
-                  <input 
-                    className="w-full bg-slate-50 border border-slate-200 rounded-xl px-4 py-3 focus:ring-2 focus:ring-primary outline-none" 
-                    placeholder="Kategori"
-                    value={formData.category || ''}
-                    onChange={e => setFormData({...formData, category: e.target.value})}
-                  />
-                  <input 
-                    className="w-full bg-slate-50 border border-slate-200 rounded-xl px-4 py-3 focus:ring-2 focus:ring-primary outline-none" 
-                    placeholder="URL Gambar"
-                    value={formData.image || ''}
-                    onChange={e => setFormData({...formData, image: e.target.value})}
-                  />
-                  <textarea 
-                    className="w-full bg-slate-50 border border-slate-200 rounded-xl px-4 py-3 focus:ring-2 focus:ring-primary outline-none h-32" 
-                    placeholder="Konten"
-                    value={formData.content || ''}
-                    onChange={e => setFormData({...formData, content: e.target.value})}
-                    required
-                  />
-                </>
+                <div className="space-y-4">
+                  <div className="space-y-1.5">
+                    <label className="text-xs font-bold text-slate-500 uppercase tracking-wider ml-1">Judul Artikel</label>
+                    <input 
+                      className="w-full bg-slate-50 border border-slate-200 rounded-xl px-4 py-3 focus:ring-2 focus:ring-primary focus:border-transparent outline-none transition-all font-medium text-slate-900" 
+                      placeholder="Masukkan judul artikel"
+                      value={formData.title || ''}
+                      onChange={e => setFormData({...formData, title: e.target.value})}
+                      required
+                    />
+                  </div>
+                  <div className="space-y-1.5">
+                    <label className="text-xs font-bold text-slate-500 uppercase tracking-wider ml-1">Kategori</label>
+                    <input 
+                      className="w-full bg-slate-50 border border-slate-200 rounded-xl px-4 py-3 focus:ring-2 focus:ring-primary focus:border-transparent outline-none transition-all font-medium text-slate-900" 
+                      placeholder="Masukkan kategori"
+                      value={formData.category || ''}
+                      onChange={e => setFormData({...formData, category: e.target.value})}
+                    />
+                  </div>
+                  <div className="space-y-1.5">
+                    <label className="text-xs font-bold text-slate-500 uppercase tracking-wider ml-1">URL Gambar</label>
+                    <input 
+                      className="w-full bg-slate-50 border border-slate-200 rounded-xl px-4 py-3 focus:ring-2 focus:ring-primary focus:border-transparent outline-none transition-all font-medium text-slate-900" 
+                      placeholder="https://..."
+                      value={formData.image || ''}
+                      onChange={e => setFormData({...formData, image: e.target.value})}
+                    />
+                  </div>
+                  <div className="space-y-1.5">
+                    <label className="text-xs font-bold text-slate-500 uppercase tracking-wider ml-1">Konten</label>
+                    <textarea 
+                      className="w-full bg-slate-50 border border-slate-200 rounded-xl px-4 py-3 focus:ring-2 focus:ring-primary focus:border-transparent outline-none transition-all h-40 font-medium text-slate-900 resize-none" 
+                      placeholder="Tulis isi konten di sini..."
+                      value={formData.content || ''}
+                      onChange={e => setFormData({...formData, content: e.target.value})}
+                      required
+                    />
+                  </div>
+                </div>
               )}
               {activeSection === 'gallery' && (
-                <>
-                  <div className="space-y-4">
-                    <label className="text-sm font-bold text-slate-700 block ml-1">Foto</label>
+                <div className="space-y-5">
+                  <div className="space-y-2">
+                    <label className="text-xs font-bold text-slate-500 uppercase tracking-wider ml-1">Foto Galeri</label>
                     {formData.imageUrl ? (
-                      <div className="relative group rounded-2xl overflow-hidden aspect-video border border-slate-200">
+                      <div className="relative group rounded-2xl overflow-hidden aspect-video border border-slate-200 shadow-inner">
                         <img src={formData.imageUrl} className="w-full h-full object-cover" alt="Preview" referrerPolicy="no-referrer" />
                         <div className="absolute inset-0 bg-slate-900/40 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center">
                           <button 
                             type="button"
                             onClick={() => setFormData({ ...formData, imageUrl: '' })}
-                            className="p-3 bg-white rounded-full text-red-500 hover:bg-red-500 hover:text-white transition-all"
+                            className="p-3 bg-white rounded-full text-red-500 hover:bg-red-500 hover:text-white transition-all shadow-xl"
                           >
                             <Trash2 className="w-5 h-5" />
                           </button>
                         </div>
                       </div>
                     ) : (
-                      <label className="w-full aspect-video border-2 border-dashed border-slate-200 rounded-2xl flex flex-col items-center justify-center gap-3 text-slate-400 hover:border-primary hover:text-primary hover:bg-primary/5 transition-all cursor-pointer relative overflow-hidden">
+                      <label className="w-full aspect-video border-2 border-dashed border-slate-200 rounded-2xl flex flex-col items-center justify-center gap-3 text-slate-400 hover:border-primary hover:text-primary hover:bg-primary/5 transition-all cursor-pointer relative overflow-hidden bg-slate-50">
                         {isUploading ? (
-                          <div className="w-8 h-8 border-4 border-primary/30 border-t-primary rounded-full animate-spin" />
+                          <div className="flex flex-col items-center gap-3">
+                            <div className="w-8 h-8 border-4 border-primary/30 border-t-primary rounded-full animate-spin" />
+                            <span className="text-xs font-bold animate-pulse">Sedang mengunggah...</span>
+                          </div>
                         ) : (
                           <>
-                            <Upload className="w-8 h-8" />
-                            <span className="text-sm font-bold">Klik untuk Upload ke Cloudinary</span>
+                            <div className="p-4 bg-white rounded-full shadow-sm border border-slate-100">
+                              <Upload className="w-8 h-8" />
+                            </div>
+                            <span className="text-xs font-bold uppercase tracking-widest">Upload Foto ke Cloudinary</span>
+                            <span className="text-[10px] text-slate-400">Klik atau seret file ke sini</span>
                           </>
                         )}
                         <input 
@@ -1163,188 +1240,195 @@ export default function Dashboard() {
                         />
                       </label>
                     )}
-                    <div className="relative py-2">
-                      <div className="absolute inset-0 flex items-center"><div className="w-full border-t border-slate-100"></div></div>
-                      <div className="relative flex justify-center text-[10px] uppercase"><span className="bg-white px-2 text-slate-400 font-bold tracking-widest">Atau Pilih dari Media</span></div>
+                    
+                    <div className="grid grid-cols-2 gap-3 pt-2">
+                       <button 
+                        type="button"
+                        onClick={() => setShowMediaLibrary(true)}
+                        className="bg-white border border-slate-200 rounded-xl px-4 py-2.5 text-[10px] font-bold text-slate-600 hover:border-primary hover:text-primary transition-all flex items-center justify-center gap-2 shadow-sm uppercase tracking-wider"
+                      >
+                        <ImageIcon className="w-3.5 h-3.5" />
+                        Media Library
+                      </button>
+                      <button 
+                        type="button"
+                        onClick={() => {
+                          const url = prompt('Masukkan URL Gambar:');
+                          if (url) setFormData({...formData, imageUrl: url});
+                        }}
+                        className="bg-white border border-slate-200 rounded-xl px-4 py-2.5 text-[10px] font-bold text-slate-600 hover:border-primary hover:text-primary transition-all flex items-center justify-center gap-2 shadow-sm uppercase tracking-wider"
+                      >
+                        <ExternalLink className="w-3.5 h-3.5" />
+                        Gunakan URL
+                      </button>
                     </div>
-                    <button 
-                      type="button"
-                      onClick={() => setShowMediaLibrary(true)}
-                      className="w-full bg-slate-50 border border-slate-200 rounded-xl px-4 py-3 text-sm font-bold text-slate-600 hover:bg-slate-100 transition-all flex items-center justify-center gap-2"
-                    >
-                      <ImageIcon className="w-4 h-4" />
-                      Buka Media Library
-                    </button>
-                    <div className="relative py-2">
-                      <div className="absolute inset-0 flex items-center"><div className="w-full border-t border-slate-100"></div></div>
-                      <div className="relative flex justify-center text-[10px] uppercase"><span className="bg-white px-2 text-slate-400 font-bold tracking-widest">Atau Gunakan URL</span></div>
-                    </div>
-                    <input 
-                      className="w-full bg-slate-50 border border-slate-200 rounded-xl px-4 py-3 focus:ring-2 focus:ring-primary outline-none" 
-                      placeholder="URL Foto"
-                      value={formData.imageUrl || ''}
-                      onChange={e => setFormData({...formData, imageUrl: e.target.value})}
-                    />
                   </div>
-                  <div className="space-y-2">
-                    <label className="text-sm font-bold text-slate-700 block ml-1">Judul</label>
+                  
+                  <div className="space-y-1.5">
+                    <label className="text-xs font-bold text-slate-500 uppercase tracking-wider ml-1">Judul Foto</label>
                     <input 
-                      className="w-full bg-slate-50 border border-slate-200 rounded-xl px-4 py-3 focus:ring-2 focus:ring-primary outline-none" 
-                      placeholder="Judul Foto"
+                      className="w-full bg-slate-50 border border-slate-200 rounded-xl px-4 py-3 focus:ring-2 focus:ring-primary focus:border-transparent outline-none font-medium text-slate-900 transition-all" 
+                      placeholder="Judul foto di galeri"
                       value={formData.title || ''}
                       onChange={e => setFormData({...formData, title: e.target.value})}
                     />
                   </div>
-                  <div className="space-y-2">
-                    <label className="text-sm font-bold text-slate-700 block ml-1">Deskripsi</label>
+                  <div className="space-y-1.5">
+                    <label className="text-xs font-bold text-slate-500 uppercase tracking-wider ml-1">Deskripsi</label>
                     <textarea 
-                      className="w-full bg-slate-50 border border-slate-200 rounded-xl px-4 py-3 focus:ring-2 focus:ring-primary outline-none h-24" 
-                      placeholder="Deskripsi singkat..."
+                      className="w-full bg-slate-50 border border-slate-200 rounded-xl px-4 py-3 focus:ring-2 focus:ring-primary focus:border-transparent outline-none h-24 font-medium text-slate-900 resize-none transition-all" 
+                      placeholder="Deskripsi singkat kegiatan..."
                       value={formData.description || ''}
                       onChange={e => setFormData({...formData, description: e.target.value})}
                     />
                   </div>
-                </>
+                </div>
               )}
               {activeSection === 'campaigns' && (
-                <>
-                  <input 
-                    className="w-full bg-slate-50 border border-slate-200 rounded-xl px-4 py-3 focus:ring-2 focus:ring-primary outline-none" 
-                    placeholder="Judul Program"
-                    value={formData.title || ''}
-                    onChange={e => setFormData({...formData, title: e.target.value})}
-                    required
-                  />
-                  <input 
-                    type="number"
-                    className="w-full bg-slate-50 border border-slate-200 rounded-xl px-4 py-3 focus:ring-2 focus:ring-primary outline-none" 
-                    placeholder="Target Dana"
-                    value={formData.targetAmount || ''}
-                    onChange={e => setFormData({...formData, targetAmount: Number(e.target.value)})}
-                    required
-                  />
-                  <div className="space-y-4">
-                    <label className="text-sm font-bold text-slate-700 block ml-1">Gambar / Banner Program</label>
-                    <div className="flex gap-4">
-                      <input 
-                        className="flex-grow bg-slate-50 border border-slate-200 rounded-xl px-4 py-3 focus:ring-2 focus:ring-primary outline-none" 
-                        placeholder="URL Gambar"
-                        value={formData.imageUrl || ''}
-                        onChange={e => setFormData({...formData, imageUrl: e.target.value})}
-                      />
-                    </div>
+                <div className="space-y-4">
+                  <div className="space-y-1.5">
+                    <label className="text-xs font-bold text-slate-500 uppercase tracking-wider ml-1">Nama Program</label>
+                    <input 
+                      className="w-full bg-slate-50 border border-slate-200 rounded-xl px-4 py-3 focus:ring-2 focus:ring-primary focus:border-transparent outline-none font-medium text-slate-900" 
+                      placeholder="Donasi Mushalla..."
+                      value={formData.title || ''}
+                      onChange={e => setFormData({...formData, title: e.target.value})}
+                      required
+                    />
                   </div>
-                  <textarea 
-                    className="w-full bg-slate-50 border border-slate-200 rounded-xl px-4 py-3 focus:ring-2 focus:ring-primary outline-none h-32" 
-                    placeholder="Copywriting Share (Pesan motivasi untuk dibagikan relawan)"
-                    value={formData.copywriting || ''}
-                    onChange={e => setFormData({...formData, copywriting: e.target.value})}
-                  />
-                  <select 
-                    className="w-full bg-slate-50 border border-slate-200 rounded-xl px-4 py-3 focus:ring-2 focus:ring-primary outline-none"
-                    value={formData.status || 'active'}
-                    onChange={e => setFormData({...formData, status: e.target.value})}
-                  >
-                    <option value="active">Aktif</option>
-                    <option value="completed">Selesai</option>
-                  </select>
-                </>
+                  <div className="space-y-1.5">
+                    <label className="text-xs font-bold text-slate-500 uppercase tracking-wider ml-1">Target Dana</label>
+                    <input 
+                      type="number"
+                      className="w-full bg-slate-50 border border-slate-200 rounded-xl px-4 py-3 focus:ring-2 focus:ring-primary focus:border-transparent outline-none font-bold text-slate-900" 
+                      placeholder="Contoh: 10000000"
+                      value={formData.targetAmount || ''}
+                      onChange={e => setFormData({...formData, targetAmount: Number(e.target.value)})}
+                      required
+                    />
+                  </div>
+                  <div className="space-y-1.5">
+                    <label className="text-xs font-bold text-slate-500 uppercase tracking-wider ml-1">Banner Program (URL)</label>
+                    <input 
+                      className="w-full bg-slate-50 border border-slate-200 rounded-xl px-4 py-3 focus:ring-2 focus:ring-primary focus:border-transparent outline-none font-medium text-slate-900" 
+                      placeholder="https://..."
+                      value={formData.imageUrl || ''}
+                      onChange={e => setFormData({...formData, imageUrl: e.target.value})}
+                    />
+                  </div>
+                  <div className="space-y-1.5">
+                    <label className="text-xs font-bold text-slate-500 uppercase tracking-wider ml-1">Pesan Relawan</label>
+                    <textarea 
+                      className="w-full bg-slate-50 border border-slate-200 rounded-xl px-4 py-3 focus:ring-2 focus:ring-primary focus:border-transparent outline-none h-28 font-medium text-slate-900 resize-none" 
+                      placeholder="Tulis pesan motivasi untuk relawan..."
+                      value={formData.copywriting || ''}
+                      onChange={e => setFormData({...formData, copywriting: e.target.value})}
+                    />
+                  </div>
+                  <div className="space-y-1.5">
+                    <label className="text-xs font-bold text-slate-500 uppercase tracking-wider ml-1">Status</label>
+                    <select 
+                      className="w-full bg-slate-50 border border-slate-200 rounded-xl px-4 py-3 focus:ring-2 focus:ring-primary focus:border-transparent outline-none font-bold text-slate-900"
+                      value={formData.status || 'active'}
+                      onChange={e => setFormData({...formData, status: e.target.value})}
+                    >
+                      <option value="active">🟢 Program Aktif</option>
+                      <option value="completed">🔴 Selesai</option>
+                    </select>
+                  </div>
+                </div>
               )}
               {activeSection === 'reports' && (
-                <>
+                <div className="space-y-4">
                   <input 
-                    className="w-full bg-slate-50 border border-slate-200 rounded-xl px-4 py-3 focus:ring-2 focus:ring-primary outline-none" 
+                    className="w-full bg-slate-50 border border-slate-200 rounded-xl px-4 py-3 focus:ring-2 focus:ring-primary outline-none font-medium text-slate-900" 
                     placeholder="Judul Laporan"
                     value={formData.title || ''}
                     onChange={e => setFormData({...formData, title: e.target.value})}
                     required
                   />
                   <input 
-                    className="w-full bg-slate-50 border border-slate-200 rounded-xl px-4 py-3 focus:ring-2 focus:ring-primary outline-none" 
-                    placeholder="URL File"
+                    className="w-full bg-slate-50 border border-slate-200 rounded-xl px-4 py-3 focus:ring-2 focus:ring-primary outline-none font-medium text-slate-900" 
+                    placeholder="URL File Laporan (PDF/Image)"
                     value={formData.fileUrl || ''}
                     onChange={e => setFormData({...formData, fileUrl: e.target.value})}
                     required
                   />
                   <select 
-                    className="w-full bg-slate-50 border border-slate-200 rounded-xl px-4 py-3 focus:ring-2 focus:ring-primary outline-none"
+                    className="w-full bg-slate-50 border border-slate-200 rounded-xl px-4 py-3 focus:ring-2 focus:ring-primary outline-none font-bold text-slate-900"
                     value={formData.type || 'financial'}
                     onChange={e => setFormData({...formData, type: e.target.value})}
                   >
                     <option value="financial">Keuangan</option>
                     <option value="activity">Kegiatan</option>
                   </select>
-                </>
+                </div>
               )}
               {activeSection === 'users' && (
-                <>
+                <div className="space-y-4">
                   <input 
-                    className="w-full bg-slate-50 border border-slate-200 rounded-xl px-4 py-3 focus:ring-2 focus:ring-primary outline-none" 
-                    placeholder="Nama"
+                    className="w-full bg-slate-50 border border-slate-200 rounded-xl px-4 py-3 focus:ring-2 focus:ring-primary outline-none font-medium text-slate-900" 
+                    placeholder="Nama Lengkap"
                     value={formData.displayName || ''}
                     onChange={e => setFormData({...formData, displayName: e.target.value})}
                     required
                   />
                   <select 
-                    className="w-full bg-slate-50 border border-slate-200 rounded-xl px-4 py-3 focus:ring-2 focus:ring-primary outline-none"
+                    className="w-full bg-slate-50 border border-slate-200 rounded-xl px-4 py-3 focus:ring-2 focus:ring-primary outline-none font-bold text-slate-900"
                     value={formData.role || 'user'}
                     onChange={e => setFormData({...formData, role: e.target.value})}
                   >
-                    <option value="user">User</option>
-                    <option value="admin">Admin</option>
+                    <option value="user">User / Donatur</option>
+                    <option value="admin">Administrator</option>
                   </select>
-                </>
+                </div>
               )}
               {activeSection === 'slider' && (
-                <>
+                <div className="space-y-4">
                   <input 
-                    className="w-full bg-slate-50 border border-slate-200 rounded-xl px-4 py-3 focus:ring-2 focus:ring-primary outline-none" 
+                    className="w-full bg-slate-50 border border-slate-200 rounded-xl px-4 py-3 focus:ring-2 focus:ring-primary outline-none font-medium text-slate-900" 
                     placeholder="Label Accent (Contoh: Pendidikan Al-Quran)"
                     value={formData.accent || ''}
                     onChange={e => setFormData({...formData, accent: e.target.value})}
                     required
                   />
                   <input 
-                    className="w-full bg-slate-50 border border-slate-200 rounded-xl px-4 py-3 focus:ring-2 focus:ring-primary outline-none" 
-                    placeholder="Judul Utama"
+                    className="w-full bg-slate-50 border border-slate-200 rounded-xl px-4 py-3 focus:ring-2 focus:ring-primary outline-none font-bold text-slate-900" 
+                    placeholder="Judul Utama Slider"
                     value={formData.title || ''}
                     onChange={e => setFormData({...formData, title: e.target.value})}
                     required
                   />
                   <textarea 
-                    className="w-full bg-slate-50 border border-slate-200 rounded-xl px-4 py-3 focus:ring-2 focus:ring-primary outline-none h-24" 
-                    placeholder="Sub-judul / Deskripsi"
+                    className="w-full bg-slate-50 border border-slate-200 rounded-xl px-4 py-3 focus:ring-2 focus:ring-primary outline-none h-24 resize-none font-medium text-slate-900" 
+                    placeholder="Sub-judul atau deskripsi singkat..."
                     value={formData.subtitle || ''}
                     onChange={e => setFormData({...formData, subtitle: e.target.value})}
                   />
-                  <input 
-                    className="w-full bg-slate-50 border border-slate-200 rounded-xl px-4 py-3 focus:ring-2 focus:ring-primary outline-none" 
-                    placeholder="Teks Tombol CTA"
-                    value={formData.cta || ''}
-                    onChange={e => setFormData({...formData, cta: e.target.value})}
-                  />
-                  <input 
-                    className="w-full bg-slate-50 border border-slate-200 rounded-xl px-4 py-3 focus:ring-2 focus:ring-primary outline-none" 
-                    placeholder="Link Tujuan (CTA) - Contoh: /donate"
-                    value={formData.targetLink || ''}
-                    onChange={e => setFormData({...formData, targetLink: e.target.value})}
-                  />
-                  <input 
-                    className="w-full bg-slate-50 border border-slate-200 rounded-xl px-4 py-3 focus:ring-2 focus:ring-primary outline-none" 
-                    placeholder="Link Detail (Optional) - Contoh: /about"
-                    value={formData.detailLink || ''}
-                    onChange={e => setFormData({...formData, detailLink: e.target.value})}
-                  />
-                  <div className="space-y-4">
-                    <label className="text-sm font-bold text-slate-700 block ml-1">Gambar Slider</label>
-                    <div className="flex gap-4">
+                  <div className="grid grid-cols-2 gap-4">
+                    <input 
+                      className="w-full bg-slate-50 border border-slate-200 rounded-xl px-4 py-3 focus:ring-2 focus:ring-primary outline-none font-medium text-slate-900" 
+                      placeholder="Teks Tombol CTA"
+                      value={formData.cta || ''}
+                      onChange={e => setFormData({...formData, cta: e.target.value})}
+                    />
+                    <input 
+                      className="w-full bg-slate-50 border border-slate-200 rounded-xl px-4 py-3 focus:ring-2 focus:ring-primary outline-none font-medium text-slate-900" 
+                      placeholder="Link CTA (/donate)"
+                      value={formData.targetLink || ''}
+                      onChange={e => setFormData({...formData, targetLink: e.target.value})}
+                    />
+                  </div>
+                  <div className="space-y-2">
+                    <label className="text-xs font-bold text-slate-500 uppercase tracking-wider ml-1">Gambar Slider</label>
+                    <div className="flex gap-3">
                       <input 
-                        className="flex-grow bg-slate-50 border border-slate-200 rounded-xl px-4 py-3 focus:ring-2 focus:ring-primary outline-none" 
-                        placeholder="URL Gambar"
+                        className="flex-grow bg-slate-50 border border-slate-200 rounded-xl px-4 py-3 focus:ring-2 focus:ring-primary outline-none font-medium text-slate-900" 
+                        placeholder="https://..."
                         value={formData.image || ''}
                         onChange={e => setFormData({...formData, image: e.target.value})}
                       />
-                      <label className="bg-primary text-white p-3 rounded-xl cursor-pointer hover:bg-primary/90 transition-all shadow-lg shadow-primary/20">
+                      <label className="bg-primary text-white p-3 rounded-xl cursor-pointer hover:bg-primary/90 transition-all shadow-lg shadow-primary/20 flex-shrink-0">
                         <Upload className="w-5 h-5" />
                         <input type="file" className="hidden" accept="image/*" onChange={async (e) => {
                           const file = e.target.files?.[0];
@@ -1369,14 +1453,15 @@ export default function Dashboard() {
                       </label>
                     </div>
                   </div>
-                </>
+                </div>
               )}
               <div className="pt-4">
                 <button 
                   type="submit"
-                  className="w-full bg-primary text-white py-4 rounded-2xl font-bold hover:bg-primary/90 transition-all shadow-lg shadow-primary/20"
+                  disabled={isUploading}
+                  className="w-full bg-primary text-white py-4 rounded-xl lg:rounded-2xl font-bold hover:bg-primary/90 transition-all shadow-lg shadow-primary/20 active:scale-[0.98] disabled:opacity-50 disabled:cursor-not-allowed uppercase tracking-widest text-sm"
                 >
-                  Simpan Perubahan
+                  {editingItem ? 'Simpan Perubahan' : 'Proses Simpan'}
                 </button>
               </div>
             </form>
@@ -1414,57 +1499,70 @@ export default function Dashboard() {
         )}
       </AnimatePresence>
 
-      {/* Media Library Modal */}
       <AnimatePresence>
         {showMediaLibrary && (
-          <div className="fixed inset-0 bg-slate-900/60 backdrop-blur-sm z-[70] flex items-center justify-center p-4">
+          <div className="fixed inset-0 bg-slate-900/60 backdrop-blur-md z-[70] flex items-center justify-center p-4">
             <motion.div
               initial={{ opacity: 0, scale: 0.95, y: 20 }}
               animate={{ opacity: 1, scale: 1, y: 0 }}
               exit={{ opacity: 0, scale: 0.95, y: 20 }}
-              className="bg-white rounded-[2.5rem] w-full max-w-4xl max-h-[80vh] overflow-hidden flex flex-col shadow-2xl"
+              className="bg-white rounded-2xl lg:rounded-3xl w-full max-w-4xl max-h-[85vh] overflow-hidden flex flex-col shadow-2xl border border-slate-100"
             >
-              <div className="p-8 border-b border-slate-100 flex justify-between items-center">
+              <div className="p-6 lg:p-8 border-b border-slate-100 flex justify-between items-center bg-slate-50/50">
                 <div>
-                  <h3 className="text-2xl font-bold text-slate-900">Media Library</h3>
-                  <p className="text-slate-500 text-sm mt-1">Pilih gambar yang sudah diunggah sebelumnya</p>
+                  <h3 className="text-xl lg:text-2xl font-black text-slate-900 tracking-tight">Media Library</h3>
+                  <p className="text-slate-500 text-xs lg:text-sm mt-1 font-medium italic">Pilih aset visual yang sudah diunggah sebelumnya</p>
                 </div>
                 <button 
                   onClick={() => setShowMediaLibrary(false)}
-                  className="p-2 hover:bg-slate-100 rounded-full transition-colors"
+                  className="p-2 hover:bg-white border border-transparent hover:border-slate-200 rounded-full transition-all shadow-sm"
                 >
                   <X className="w-6 h-6 text-slate-400" />
                 </button>
               </div>
 
-              <div className="flex-1 overflow-y-auto p-8">
-                <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-4">
+              <div className="flex-1 overflow-y-auto p-6 lg:p-10 scrollbar-hide">
+                <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-4 lg:gap-6">
                   {media.length > 0 ? media.map((item) => (
-                    <button
+                    <motion.button
                       key={item.id}
+                      whileHover={{ scale: 1.02 }}
+                      whileTap={{ scale: 0.98 }}
                       onClick={() => {
                         setFormData({ ...formData, imageUrl: item.url });
                         setShowMediaLibrary(false);
                       }}
-                      className="group relative aspect-square rounded-2xl overflow-hidden border-2 border-transparent hover:border-primary transition-all"
+                      className="group relative aspect-square rounded-2xl overflow-hidden border-2 border-slate-100 hover:border-primary transition-all shadow-sm hover:shadow-md"
                     >
                       <img 
                         src={item.url} 
-                        className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500" 
+                        className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110" 
                         alt="Media"
                         referrerPolicy="no-referrer"
                       />
-                      <div className="absolute inset-0 bg-primary/20 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center">
-                        <span className="bg-white text-primary text-[10px] font-bold px-3 py-1 rounded-full shadow-lg">PILIH</span>
+                      <div className="absolute inset-0 bg-primary/20 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center backdrop-blur-[2px]">
+                        <span className="bg-white text-primary text-[10px] font-black px-4 py-1.5 rounded-full shadow-xl transform scale-90 group-hover:scale-100 transition-transform uppercase tracking-widest">Pilih Gambar</span>
                       </div>
-                    </button>
+                    </motion.button>
                   )) : (
-                    <div className="col-span-full py-20 text-center">
-                      <ImageIcon className="w-12 h-12 text-slate-200 mx-auto mb-4" />
-                      <p className="text-slate-400">Belum ada media yang diunggah.</p>
+                    <div className="col-span-full py-24 text-center">
+                      <div className="w-20 h-20 bg-slate-50 rounded-full flex items-center justify-center mx-auto mb-6">
+                         <ImageIcon className="w-10 h-10 text-slate-200" />
+                      </div>
+                      <p className="text-slate-400 font-bold uppercase tracking-widest text-sm">Media Library Kosong</p>
+                      <p className="text-slate-300 text-xs mt-1">Unggah aset pertama Anda untuk melihatnya di sini</p>
                     </div>
                   )}
                 </div>
+              </div>
+              
+              <div className="p-4 lg:p-6 bg-slate-50 border-t border-slate-100 text-right">
+                <button 
+                  onClick={() => setShowMediaLibrary(false)}
+                  className="px-6 py-2 rounded-full border border-slate-200 text-slate-600 font-bold text-xs uppercase tracking-widest hover:bg-white transition-all shadow-sm"
+                >
+                  Tutup Library
+                </button>
               </div>
             </motion.div>
           </div>
