@@ -294,7 +294,7 @@ export default function ArticleEditor() {
                       </div>
                       <div>
                         <div className="font-bold text-slate-900">{user?.displayName || 'Admin'}</div>
-                        <div className="text-xs text-slate-500">Penulis Mushaff Indonesia</div>
+                        <div className="text-xs text-slate-500">Penulis {settings.find(s => s.id === 'general')?.site_name || "Platform Donasi"}</div>
                       </div>
                     </div>
                     

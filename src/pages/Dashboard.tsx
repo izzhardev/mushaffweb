@@ -36,7 +36,7 @@ import { motion, AnimatePresence } from 'motion/react';
 import { cn } from '../lib/utils';
 import { Link, useNavigate } from 'react-router-dom';
 
-type Section = 'overview' | 'donations' | 'articles' | 'gallery' | 'campaigns' | 'reports' | 'users' | 'settings' | 'slider' | 'volunteer' | 'profile';
+type Section = 'overview' | 'donations' | 'articles' | 'gallery' | 'campaigns' | 'reports' | 'users' | 'settings' | 'slider' | 'activities' | 'volunteer' | 'profile';
 
 export default function Dashboard() {
   const { user, logout, userProfile } = useAuth();
@@ -52,6 +52,7 @@ export default function Dashboard() {
     media,
     settings,
     slider,
+    activities,
     createItem,
     updateItem,
     deleteItem,
@@ -79,6 +80,7 @@ export default function Dashboard() {
     site_name: '',
     site_logo: '',
     site_description: '',
+    youtube_video_id: '',
     contact_email: '',
     contact_phone: '',
     address: ''
@@ -95,6 +97,7 @@ export default function Dashboard() {
           site_name: currentSettings.site_name || '',
           site_logo: currentSettings.site_logo || '',
           site_description: currentSettings.site_description || '',
+          youtube_video_id: currentSettings.youtube_video_id || '',
           contact_email: currentSettings.contact_email || '',
           contact_phone: currentSettings.contact_phone || '',
           address: currentSettings.address || ''
@@ -136,6 +139,7 @@ export default function Dashboard() {
     { id: 'gallery', label: 'Galeri', icon: ImageIcon, roles: ['admin'] },
     { id: 'articles', label: 'Artikel', icon: FileText, roles: ['admin'] },
     { id: 'campaigns', label: 'Penggalangan', icon: TrendingUp, roles: ['admin'] },
+    { id: 'activities', label: 'Kegiatan Terhangat', icon: Star, roles: ['admin'] },
     { id: 'slider', label: 'Slider Hero', icon: ImageIcon, roles: ['admin'] },
     { id: 'users', label: 'User', icon: Users, roles: ['admin'] },
     { id: 'reports', label: 'Laporan', icon: FileBarChart, roles: ['admin'] },
@@ -274,6 +278,7 @@ export default function Dashboard() {
       donations: 'donations',
       settings: 'settings',
       slider: 'slider',
+      activities: 'activities',
       volunteer: '',
       profile: ''
     };
@@ -300,6 +305,7 @@ export default function Dashboard() {
       donations: 'donations',
       settings: 'settings',
       slider: 'slider',
+      activities: 'activities',
       volunteer: '',
       profile: ''
     };
@@ -862,6 +868,16 @@ export default function Dashboard() {
                               <Maximize2 className="w-4 h-4" />
                             </button>
                             <button 
+                              onClick={() => {
+                                navigator.clipboard.writeText(item.imageUrl);
+                                alert('URL Gambar berhasil disalin!');
+                              }}
+                              className="p-2 bg-white rounded-full text-slate-900 hover:bg-sky-500 hover:text-white transition-all transform translate-y-2 group-hover:translate-y-0 shadow-lg"
+                              title="Salin URL Gambar"
+                            >
+                              <Copy className="w-4 h-4" />
+                            </button>
+                            <button 
                               onClick={() => handleOpenModal(item)}
                               className="p-2 bg-white rounded-full text-slate-900 hover:bg-primary hover:text-white transition-all transform translate-y-2 group-hover:translate-y-0 shadow-lg"
                               title="Edit"
@@ -911,6 +927,12 @@ export default function Dashboard() {
               { key: 'role', label: 'Role' }
             ])}
 
+            {activeSection === 'activities' && renderManagementSection('Manajemen Kegiatan Terhangat', activities, [
+              { key: 'image', label: 'Gambar' },
+              { key: 'title', label: 'Judul' },
+              { key: 'desc', label: 'Deskripsi' }
+            ])}
+
             {activeSection === 'slider' && renderManagementSection('Manajemen Slider Hero', slider, [
               { key: 'title', label: 'Judul' },
               { key: 'accent', label: 'Label Accent' },
@@ -955,7 +977,7 @@ export default function Dashboard() {
                                <button 
                                  onClick={() => {
                                    const campaignUrl = `${window.location.origin}/donate/${campaign.id}?ref=${user?.uid}`;
-                                   const text = campaign.copywriting || `Ayo bantu program "${campaign.title}" di Mushaff Indonesia. Setiap kontribusi Anda sangat berarti untuk umat.\n\nSimak selengkapnya: ${campaignUrl}`;
+                                   const text = campaign.copywriting || `Ayo bantu program "${campaign.title}" di ${generalSettings.site_name || "Mushaff Indonesia"}. Setiap kontribusi Anda sangat berarti untuk umat.\n\nSimak selengkapnya: ${campaignUrl}`;
                                    navigator.clipboard.writeText(text);
                                    alert('Copywriting berhasil disalin!');
                                  }}
@@ -968,7 +990,7 @@ export default function Dashboard() {
                              <textarea 
                                 readOnly
                                 className="w-full bg-slate-50/50 border border-slate-100 rounded-b-xl lg:rounded-b-2xl px-4 py-3 text-[9px] sm:text-[10px] lg:text-xs text-slate-500 h-28 lg:h-32 outline-none resize-none leading-relaxed"
-                                value={campaign.copywriting || `Ayo bantu program "${campaign.title}" di Mushaff Indonesia. Setiap kontribusi Anda sangat berarti untuk umat.\n\nSimak selengkapnya: ${window.location.origin}/donate/${campaign.id}?ref=${user?.uid}`}
+                                value={campaign.copywriting || `Ayo bantu program "${campaign.title}" di ${generalSettings.site_name || "Mushaff Indonesia"}. Setiap kontribusi Anda sangat berarti untuk umat.\n\nSimak selengkapnya: ${window.location.origin}/donate/${campaign.id}?ref=${user?.uid}`}
                              />
                           </div>
                         </div>
@@ -977,7 +999,7 @@ export default function Dashboard() {
                           <button 
                             onClick={() => {
                               const campaignUrl = `${window.location.origin}/donate/${campaign.id}?ref=${user?.uid}`;
-                              const text = campaign.copywriting || `Ayo bantu program "${campaign.title}" di Mushaff Indonesia.`;
+                              const text = campaign.copywriting || `Ayo bantu program "${campaign.title}" di ${generalSettings.site_name || "Mushaff Indonesia"}.`;
                               window.open(`https://wa.me/?text=${encodeURIComponent(text + '\n\n' + campaignUrl)}`, '_blank');
                             }}
                             className="bg-[#25D366] text-white py-3 rounded-xl lg:rounded-2xl font-bold text-[9px] lg:text-[10px] uppercase tracking-widest flex items-center justify-center gap-2 hover:opacity-90 transition-all"
@@ -1077,6 +1099,18 @@ export default function Dashboard() {
                           placeholder="Jelaskan secara singkat tentang website ini..."
                           className="w-full bg-slate-50 border border-slate-200 rounded-xl lg:rounded-2xl px-4 lg:px-6 py-3 lg:py-4 font-medium text-slate-900 focus:ring-2 focus:ring-primary outline-none transition-all h-32 text-sm"
                         />
+                      </div>
+
+                      <div className="space-y-2">
+                        <label className="text-[10px] lg:text-xs font-bold text-slate-500 uppercase tracking-wider ml-1">YouTube Video ID (Landing Page)</label>
+                        <input 
+                          type="text"
+                          value={siteSettingsForm.youtube_video_id}
+                          onChange={(e) => setSiteSettingsForm({ ...siteSettingsForm, youtube_video_id: e.target.value })}
+                          placeholder="Contoh: mvupJf_DYyI"
+                          className="w-full bg-slate-50 border border-slate-200 rounded-xl lg:rounded-2xl px-4 lg:px-6 py-3 lg:py-4 font-bold text-slate-900 focus:ring-2 focus:ring-primary outline-none transition-all text-sm"
+                        />
+                        <p className="text-[10px] text-slate-400 ml-1 italic font-medium">*Ambil ID dari URL YouTube, misal: youtube.com/watch?v=<b>mvupJf_DYyI</b></p>
                       </div>
                     </div>
 
@@ -1381,6 +1415,58 @@ export default function Dashboard() {
                     <option value="user">User / Donatur</option>
                     <option value="admin">Administrator</option>
                   </select>
+                </div>
+              )}
+              {activeSection === 'activities' && (
+                <div className="space-y-4">
+                  <div className="space-y-1.5">
+                    <label className="text-xs font-bold text-slate-500 uppercase tracking-wider ml-1">Judul Kegiatan</label>
+                    <input 
+                      className="w-full bg-slate-50 border border-slate-200 rounded-xl px-4 py-3 focus:ring-2 focus:ring-primary outline-none font-medium text-slate-900" 
+                      placeholder="Judul kegiatan..."
+                      value={formData.title || ''}
+                      onChange={e => setFormData({...formData, title: e.target.value})}
+                      required
+                    />
+                  </div>
+                  <div className="space-y-1.5">
+                    <label className="text-xs font-bold text-slate-500 uppercase tracking-wider ml-1">Deskripsi Singkat</label>
+                    <textarea 
+                      className="w-full bg-slate-50 border border-slate-200 rounded-xl px-4 py-3 focus:ring-2 focus:ring-primary outline-none h-28 font-medium text-slate-900 resize-none" 
+                      placeholder="Deskripsi kegiatan..."
+                      value={formData.desc || ''}
+                      onChange={e => setFormData({...formData, desc: e.target.value})}
+                      required
+                    />
+                  </div>
+                  <div className="space-y-1.5">
+                    <label className="text-xs font-bold text-slate-500 uppercase tracking-wider ml-1">Gambar (URL)</label>
+                    <div className="flex gap-2">
+                      <input 
+                        className="flex-1 bg-slate-50 border border-slate-200 rounded-xl px-4 py-3 focus:ring-2 focus:ring-primary outline-none font-medium text-slate-900" 
+                        placeholder="https://..."
+                        value={formData.image || ''}
+                        onChange={e => setFormData({...formData, image: e.target.value})}
+                        required
+                      />
+                      <button 
+                        type="button"
+                        onClick={() => setShowMediaLibrary(true)}
+                        className="bg-slate-100 p-3 rounded-xl text-slate-600 hover:bg-slate-200 transition-colors"
+                      >
+                        <ImageIcon className="w-5 h-5" />
+                      </button>
+                    </div>
+                  </div>
+                  <div className="space-y-1.5">
+                    <label className="text-xs font-bold text-slate-500 uppercase tracking-wider ml-1">Link Selengkapnya</label>
+                    <input 
+                      className="w-full bg-slate-50 border border-slate-200 rounded-xl px-4 py-3 focus:ring-2 focus:ring-primary outline-none font-medium text-slate-900" 
+                      placeholder="/about atau # atau https://..."
+                      value={formData.link || ''}
+                      onChange={e => setFormData({...formData, link: e.target.value})}
+                    />
+                  </div>
                 </div>
               )}
               {activeSection === 'slider' && (

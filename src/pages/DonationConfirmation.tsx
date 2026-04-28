@@ -19,7 +19,8 @@ import { useAppDatabase } from '../hooks/useAppDatabase';
 export default function DonationConfirmation() {
   const { id } = useParams();
   const navigate = useNavigate();
-  const { getDonationById, campaigns } = useAppDatabase();
+  const { getDonationById, campaigns, settings } = useAppDatabase();
+  const siteSettings = settings.find(s => s.id === 'general') || {};
   const [donation, setDonation] = useState<any>(null);
   const [campaign, setCampaign] = useState<any>(null);
   const [isProcessing, setIsProcessing] = useState(false);
@@ -38,8 +39,8 @@ export default function DonationConfirmation() {
           donationId: donation.id,
           amount: donation.amount,
           donorName: donation.donorName,
-          email: donation.email || 'info@mushaffindonesia.org',
-          programTitle: campaign?.title || 'Donasi Mushaff Indonesia'
+          email: donation.email || (siteSettings.contact_email || 'info@mushaffindonesia.org'),
+          programTitle: campaign?.title || `Donasi ${siteSettings.site_name || 'Mushaff Indonesia'}`
         }),
       });
 
@@ -222,7 +223,7 @@ export default function DonationConfirmation() {
                 
                 <a 
                   href="/qris-min.jpeg" 
-                  download="QRIS-Mushaff-Indonesia.jpeg"
+                  download={`QRIS-${(siteSettings.site_name || 'Mushaff-Indonesia').replace(/\s+/g, '-')}.jpeg`}
                   className="flex items-center gap-2 bg-white px-4 py-2 rounded-full text-xs font-bold text-slate-600 border border-slate-200 hover:border-primary hover:text-primary transition-all active:scale-95 shadow-sm"
                 >
                   <Download className="w-3.5 h-3.5" />

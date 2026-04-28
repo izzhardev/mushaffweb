@@ -33,7 +33,7 @@ export default function Footer() {
             </Link>
             <p className="text-primary font-bold mb-6 tracking-widest">#Bersama Beramal Saleh</p>
             <p className="text-slate-400 leading-relaxed mb-8">
-              {siteSettings.site_description || "Yayasan pemberdayaan umat yang fokus pada pemberantasan buta huruf Al-Quran dan kesejahteraan mustahik di Indonesia."}
+              {siteSettings.site_name || "Mushaff Indonesia"} — {siteSettings.site_description || "Yayasan pemberdayaan umat yang fokus pada pemberantasan buta huruf Al-Quran."}
             </p>
             <div className="flex gap-4">
               <a href="#" className="w-10 h-10 rounded-full bg-slate-800 flex items-center justify-center hover:bg-primary transition-colors">
@@ -89,7 +89,7 @@ export default function Footer() {
         </div>
 
         <div className="pt-10 border-t border-slate-800 text-center text-slate-500 text-sm">
-          <p>© 2026 Mushaff Indonesia. All rights reserved.</p>
+          <p>© {new Date().getFullYear()} {siteSettings.site_name || "Mushaff Indonesia"}. All rights reserved.</p>
         </div>
       </div>
     </footer>

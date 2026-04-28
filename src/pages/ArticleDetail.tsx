@@ -7,7 +7,7 @@ import { useAppDatabase } from '../hooks/useAppDatabase';
 export default function ArticleDetail() {
   const { id } = useParams();
   const navigate = useNavigate();
-  const { articles } = useAppDatabase();
+  const { articles, settings } = useAppDatabase();
   const [article, setArticle] = useState<any>(null);
 
   useEffect(() => {
@@ -118,7 +118,7 @@ export default function ArticleDetail() {
                 <div className="text-center md:text-left">
                   <h4 className="text-xl font-bold text-slate-900 mb-2">Ditulis oleh {article.authorName || 'Admin'}</h4>
                   <p className="text-slate-500 leading-relaxed">
-                    Kontributor aktif Mushaff Edu yang berdedikasi untuk menyebarkan syiar Islam dan inspirasi kebaikan melalui tulisan.
+                    Kontributor aktif {settings.find(s => s.id === 'general')?.site_name || "Mushaff Indonesia"} yang berdedikasi untuk menyebarkan syiar Islam dan inspirasi kebaikan melalui tulisan.
                   </p>
                 </div>
               </div>

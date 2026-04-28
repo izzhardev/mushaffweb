@@ -22,6 +22,7 @@ export const useAppDatabase = () => {
   const [media, setMedia] = useState<any[]>([]);
   const [settings, setSettings] = useState<any[]>([]);
   const [slider, setSlider] = useState<any[]>([]);
+  const [activities, setActivities] = useState<any[]>([]);
 
   const [isOffline, setIsOffline] = useState(false);
 
@@ -68,6 +69,13 @@ export const useAppDatabase = () => {
         setSettings(snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() })));
       },
       (err) => handleError('settings', err)
+    );
+
+    const unsubActivities = onSnapshot(collection(db, 'activities'), 
+      (snapshot) => {
+        setActivities(snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() })));
+      },
+      (err) => handleError('activities', err)
     );
 
     let unsubDonations = () => {};
@@ -159,6 +167,7 @@ export const useAppDatabase = () => {
         unsubGallery();
         unsubCampaigns();
         unsubSettings();
+        unsubActivities();
         unsubDonations();
         unsubReports();
         unsubUsers();
@@ -179,6 +188,7 @@ export const useAppDatabase = () => {
       unsubGallery();
       unsubCampaigns();
       unsubSettings();
+      unsubActivities();
     };
   }, [user, userProfile]);
 
@@ -263,6 +273,7 @@ export const useAppDatabase = () => {
     media,
     settings,
     slider,
+    activities,
     addDonation,
     createItem,
     updateItem,

@@ -54,7 +54,7 @@ async function startServer() {
           id: donationId,
           price: amount,
           quantity: 1,
-          name: programTitle || 'Donasi Mushaff Indonesia'
+          name: programTitle || 'Donasi Online'
         }],
         usage_limit: 1
       };

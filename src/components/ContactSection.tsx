@@ -10,7 +10,7 @@ export default function ContactSection() {
     { label: 'Telepon / WA', value: siteSettings.contact_phone || '0851-5546-6551', icon: MessageCircle, link: `https://wa.me/${(siteSettings.contact_phone || '0851-5546-6551').replace(/\D/g, '')}` },
     { label: 'Instagram', value: '@mushaff.indonesia', icon: Instagram, link: 'https://www.instagram.com/mushaff.indonesia' },
     { label: 'Email', value: siteSettings.contact_email || 'info@mushaffindonesia.org', icon: Globe, link: `mailto:${siteSettings.contact_email || 'info@mushaffindonesia.org'}` },
-    { label: 'Website', value: 'mushaffindonesia.org', icon: Globe, link: 'https://www.mushaffindonesia.org' },
+    { label: 'Website', value: (siteSettings.site_name?.toLowerCase().replace(/\s+/g, '') || 'mushaffindonesia') + '.org', icon: Globe, link: '#' },
   ];
 
   return (

@@ -8,7 +8,7 @@ import { cn } from '../lib/utils';
 
 export default function Profile() {
   const { user, userProfile } = useAuth();
-  const { updateItem } = useAppDatabase();
+  const { updateItem, settings } = useAppDatabase();
   const navigate = useNavigate();
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [success, setSuccess] = useState(false);
@@ -114,7 +114,7 @@ export default function Profile() {
             <div className="bg-primary/5 rounded-[2rem] p-6 border border-primary/10">
               <h4 className="text-sm font-bold text-primary uppercase tracking-widest mb-4">Tips Keamanan</h4>
               <p className="text-xs text-slate-600 leading-relaxed">
-                Jangan pernah membagikan kata sandi atau informasi pribadi sensitif kepada siapapun. Mushaff Indonesia tidak akan pernah menanyakan hal tersebut.
+                Jangan pernah membagikan kata sandi atau informasi pribadi sensitif kepada siapapun. {settings.find(s => s.id === 'general')?.site_name || "Mushaff Indonesia"} tidak akan pernah menanyakan hal tersebut.
               </p>
             </div>
           </div>

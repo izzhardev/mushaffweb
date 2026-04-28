@@ -25,7 +25,8 @@ export default function DonationDetail() {
   const navigate = useNavigate();
   const queryParams = new URLSearchParams(window.location.search);
   const referrerUid = queryParams.get('ref');
-  const { campaigns, addDonation } = useAppDatabase();
+  const { campaigns, addDonation, settings } = useAppDatabase();
+  const siteSettings = settings.find(s => s.id === 'general') || {};
   const [campaign, setCampaign] = useState<any>(null);
   
   // Form State
@@ -126,9 +127,9 @@ export default function DonationDetail() {
   }
 
   // Fallback for general donation if no ID
-  const displayTitle = campaign?.title || 'Sedekah Jariyah Mushaff Edu';
+  const displayTitle = campaign?.title || `Sedekah Jariyah ${siteSettings.site_name || 'Mushaff Indonesia'}`;
   const displayImage = campaign?.image || 'https://picsum.photos/seed/mushaff/800/600';
-  const displayDesc = campaign?.description || 'Bantu kami mewujudkan generasi penghafal Al-Quran melalui program-program pendidikan dan dakwah Mushaff Edu.';
+  const displayDesc = campaign?.description || `Bantu kami mewujudkan generasi penghafal Al-Quran melalui program-program pendidikan dan dakwah ${siteSettings.site_name || 'Mushaff Indonesia'}.`;
   const target = campaign?.targetAmount || 100000000;
   const current = campaign?.currentAmount || 0;
   const progress = Math.min(Math.round((current / target) * 100), 100);
@@ -216,7 +217,7 @@ export default function DonationDetail() {
               </div>
               <div>
                 <p className="text-[10px] font-bold text-slate-400 uppercase">Penyelenggara</p>
-                <p className="text-sm font-bold text-slate-900">Yayasan Mushaff Edu Indonesia</p>
+                <p className="text-sm font-bold text-slate-900">{siteSettings.site_name || "Mushaff Edu Indonesia"}</p>
               </div>
             </div>
             <div className="flex items-center gap-4 p-4 bg-slate-50 rounded-2xl border border-slate-100">

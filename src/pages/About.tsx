@@ -7,6 +7,7 @@ import TeamSection from '../components/TeamSection';
 import ContactSection from '../components/ContactSection';
 
 export default function About() {
+  const { settings } = useAppDatabase();
   return (
     <main className="bg-white">
       {/* Hero Section */}
@@ -27,7 +28,7 @@ export default function About() {
             animate={{ opacity: 1, y: 0 }}
             className="text-4xl lg:text-6xl font-black text-white mb-6 uppercase tracking-tight"
           >
-            Tentang <span className="text-primary">Mushaff</span> Indonesia
+            Tentang <span className="text-primary">{settings.find(s => s.id === 'general')?.site_name.split(' ')[0] || "Mushaff"}</span> {settings.find(s => s.id === 'general')?.site_name.split(' ').slice(1).join(' ') || "Indonesia"}
           </motion.h1>
           <motion.p 
             initial={{ opacity: 0, y: 20 }}

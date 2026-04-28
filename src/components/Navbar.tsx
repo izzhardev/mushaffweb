@@ -13,14 +13,14 @@ export default function Navbar() {
   const { settings } = useAppDatabase();
 
   const siteSettings = settings.find(s => s.id === 'general') || {
-    site_name: 'Mushaff Indonesia',
+    site_name: 'Platform Donasi',
     site_logo: 'logo.png',
-    site_description: 'Pendidikan Al-Quran'
+    site_description: 'Platform pemberdayaan umat'
   };
 
-  const nameParts = siteSettings.site_name?.split(' ') || ['Mushaff', 'Indonesia'];
-  const firstName = nameParts[0] || 'Mushaff';
-  const lastName = nameParts.slice(1).join(' ') || 'Indonesia';
+  const nameParts = (siteSettings.site_name || 'Platform Donasi').split(' ');
+  const firstName = nameParts[0] || 'Platform';
+  const lastName = nameParts.slice(1).join(' ') || 'Donasi';
 
   const navLinks = [
     { name: 'Beranda', href: '/' },
@@ -50,7 +50,7 @@ export default function Navbar() {
                 <span className="text-xl font-bold text-primary tracking-tight leading-none">
                   {firstName}<span className="text-slate-900">{lastName}</span>
                 </span>
-                <span className="text-[10px] font-bold text-accent uppercase tracking-[0.2em]">{siteSettings.site_description || "Pendidikan Al-Quran"}</span>
+                <span className="text-[10px] font-bold text-accent uppercase tracking-[0.2em]">{siteSettings.site_description || "Platform Pemberdayaan Umat"}</span>
               </div>
             </Link>
           </div>

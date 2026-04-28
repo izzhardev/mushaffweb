@@ -1,6 +1,9 @@
 import { motion } from 'motion/react';
+import { useAppDatabase } from '../hooks/useAppDatabase';
 
 export default function TeamSection() {
+  const { settings } = useAppDatabase();
+  const siteSettings = settings.find(s => s.id === 'general') || {};
   const coreTeam = [
     { role: 'Ketua', name: 'Zulkifli, S.Si (Bang Zoel)' },
     { role: 'Sekretaris', name: 'Dewi Cahyanti, S.Si., S.Pd' },
@@ -21,7 +24,7 @@ export default function TeamSection() {
     <section id="tim" className="py-24 bg-white">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="text-center mb-20">
-          <h2 className="text-4xl font-bold text-slate-900 mb-6">Tim Inti Mushaff Indonesia</h2>
+          <h2 className="text-4xl font-bold text-slate-900 mb-6 font-title">Tim Inti {siteSettings.site_name || "Mushaff Indonesia"}</h2>
           <p className="text-slate-600 max-w-2xl mx-auto">
             Didukung oleh tim profesional dan relawan muda yang berdedikasi.
           </p>

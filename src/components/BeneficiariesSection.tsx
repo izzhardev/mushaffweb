@@ -1,7 +1,9 @@
 import { motion } from 'motion/react';
 import { Users, Heart, GraduationCap, BookOpen } from 'lucide-react';
+import { useAppDatabase } from '../hooks/useAppDatabase';
 
 export default function BeneficiariesSection() {
+  const { settings } = useAppDatabase();
   const categories = [
     {
       title: 'Dakwah',
@@ -35,7 +37,7 @@ export default function BeneficiariesSection() {
             <span className="text-primary font-bold tracking-widest uppercase text-xs mb-4 block">Dampak Nyata</span>
             <h2 className="text-4xl lg:text-5xl font-bold text-slate-900 mb-6 leading-tight">Jejak Kebaikan Kita</h2>
             <p className="text-slate-600 text-lg">
-              Alhamdulillah, Mushaff Indonesia terus bergerak menebar manfaat. Inilah bukti nyata dari setiap butir kebaikan yang Anda percayakan.
+              Alhamdulillah, {settings.find(s => s.id === 'general')?.site_name || "Platform Donasi"} terus bergerak menebar manfaat. Inilah bukti nyata dari setiap butir kebaikan yang Anda percayakan.
             </p>
           </motion.div>
         </div>

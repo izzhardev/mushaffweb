@@ -8,8 +8,8 @@ export default function AboutSection() {
 
   const timeline = [
     { year: '2021', event: 'Awal pembentukan komunitas' },
-    { year: '2024', event: 'Transformasi menjadi Mushaff Indonesia' },
-    { year: '2025', event: 'Resmi menjadi Yayasan Bhakti Mushaff Indonesia' },
+    { year: '2024', event: `Transformasi menjadi ${siteSettings.site_name || "Mushaff Indonesia"}` },
+    { year: '2025', event: `Resmi menjadi Yayasan Bhakti ${siteSettings.site_name || "Mushaff Indonesia"}` },
   ];
 
   return (
@@ -28,7 +28,7 @@ export default function AboutSection() {
               Tentang {siteSettings.site_name || "Mushaff Indonesia"}
             </h2>
             <p className="text-lg text-slate-600 leading-relaxed mb-8">
-              {siteSettings.site_description || "Mushaff Indonesia adalah komunitas pemuda muslim yang bergerak di bidang dakwah, pendidikan, dan kemanusiaan. Berdiri sejak tahun 2021 dan bertransformasi menjadi gerakan nasional, Mushaff Indonesia memiliki tujuan untuk membumikan nilai-nilai Al-Qur’an serta memberantas buta huruf Al-Qur’an, khususnya di kalangan pemuda."}
+              {siteSettings.site_description || `${siteSettings.site_name || "Mushaff Indonesia"} adalah komunitas pemuda muslim yang bergerak di bidang dakwah, pendidikan, dan kemanusiaan. Berdiri sejak tahun 2021 dan bertransformasi menjadi gerakan nasional, ${siteSettings.site_name || "Mushaff Indonesia"} memiliki tujuan untuk membumikan nilai-nilai Al-Qur’an serta memberantas buta huruf Al-Qur’an, khususnya di kalangan pemuda.`}
             </p>
             
             <div className="space-y-6">
@@ -55,8 +55,8 @@ export default function AboutSection() {
               <iframe
                 width="100%"
                 height="100%"
-                src="https://www.youtube.com/embed/mvupJf_DYyI"
-                title="Tentang Mushaff Indonesia"
+                src={`https://www.youtube.com/embed/${siteSettings.youtube_video_id || "mvupJf_DYyI"}`}
+                title={`Tentang ${siteSettings.site_name || "Mushaff Indonesia"}`}
                 frameBorder="0"
                 allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
                 allowFullScreen

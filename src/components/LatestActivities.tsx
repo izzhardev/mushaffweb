@@ -1,27 +1,39 @@
 import { motion } from 'motion/react';
 import { Smartphone, Download, BookOpen, Users, Mic2, ArrowRight } from 'lucide-react';
+import { useAppDatabase } from '../hooks/useAppDatabase';
 
 export default function LatestActivities() {
-  const activities = [
+  const { settings, activities: dbActivities } = useAppDatabase();
+  const siteSettings = settings.find(s => s.id === 'general') || { site_name: 'Platform Donasi' };
+  
+  const defaultActivities = [
     {
       title: 'Tadarus on the Street',
       image: 'https://res.cloudinary.com/dgezrzjnb/image/upload/v1777128283/k0w7glbsayvpubhxkd5q.png',
       desc: 'Gerakan membaca Al-Quran di ruang publik untuk mensyiarkan nilai-nilai Islam.',
       icon: Users,
+      link: '#'
     },
     {
-      title: 'Mushaff Tartila',
+      title: `${siteSettings.site_name.split(' ')[0] || 'Mushaff'} Tartila`,
       image: 'https://res.cloudinary.com/dgezrzjnb/image/upload/v1777128996/wdjzpyfchxojtmjzhmmp.png',
       desc: 'Program intensif belajar tahsin dan tajwid dengan metode yang mudah dipahami.',
       icon: BookOpen,
+      link: '#'
     },
     {
-      title: 'Kajian Mushaff',
+      title: `Kajian ${siteSettings.site_name.split(' ')[0] || 'Mushaff'}`,
       image: 'https://res.cloudinary.com/dgezrzjnb/image/upload/v1777128969/rlpavfc3oqiii20wks9g.png',
       desc: 'Kajian rutin mingguan membahas tafsir dan implementasi Al-Quran dalam kehidupan.',
       icon: Mic2,
+      link: '#'
     }
   ];
+
+  const activities = dbActivities.length > 0 ? dbActivities.map(act => ({
+    ...act,
+    icon: act.title.toLowerCase().includes('kajian') ? Mic2 : (act.title.toLowerCase().includes('belajar') || act.title.toLowerCase().includes('tahsin') ? BookOpen : Users)
+  })) : defaultActivities;
 
   return (
     <section className="py-24 bg-slate-50 overflow-hidden">
@@ -44,7 +56,7 @@ export default function LatestActivities() {
         </div>
 
         <div className="grid lg:grid-cols-12 gap-8">
-          {/* Mushaff Edu App Block */}
+          {/* App Block */}
           <motion.div
             initial={{ opacity: 0, y: 30 }}
             whileInView={{ opacity: 1, y: 0 }}
@@ -58,9 +70,9 @@ export default function LatestActivities() {
                 <Smartphone className="w-8 h-8" />
               </div>
               
-              <h3 className="text-3xl font-bold mb-4">Mushaff Edu</h3>
+              <h3 className="text-3xl font-bold mb-4">{siteSettings.site_name.split(' ')[0] || 'Mushaff'} App</h3>
               <p className="text-white/80 mb-8 text-lg leading-relaxed">
-                Belajar Al-Quran kini lebih mudah dalam genggaman. Download aplikasi Mushaff Edu untuk akses materi pembelajaran interaktif kapan saja.
+                Belajar bersama kami kini lebih mudah dalam genggaman. Download aplikasi {siteSettings.site_name.split(' ')[0] || 'Mushaff'} untuk akses materi pembelajaran interaktif kapan saja.
               </p>
               
               <div className="mt-auto">
@@ -118,9 +130,12 @@ export default function LatestActivities() {
                   <p className="text-slate-600 text-sm leading-relaxed mb-6">
                     {act.desc}
                   </p>
-                  <button className="text-primary text-sm font-bold flex items-center gap-2 hover:gap-3 transition-all">
+                  <a 
+                    href={act.link || '#'} 
+                    className="text-primary text-sm font-bold flex items-center gap-2 hover:gap-3 transition-all"
+                  >
                     Selengkapnya <ArrowRight className="w-4 h-4" />
-                  </button>
+                  </a>
                 </div>
               </motion.div>
             ))}

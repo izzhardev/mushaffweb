@@ -1,5 +1,6 @@
 import { motion } from 'motion/react';
 import { BookOpen, GraduationCap, Globe, Heart } from 'lucide-react';
+import { useAppDatabase } from '../hooks/useAppDatabase';
 
 const MISSIONS = [
   {
@@ -29,6 +30,7 @@ const MISSIONS = [
 ];
 
 export default function MissionSection() {
+  const { settings } = useAppDatabase();
   return (
     <section className="py-24 bg-emerald-50/30 relative overflow-hidden">
       {/* Subtle Islamic Pattern or Element */}
@@ -66,7 +68,7 @@ export default function MissionSection() {
             transition={{ delay: 0.2 }}
             className="text-lg text-slate-600 leading-relaxed"
           >
-            Mushaff Indonesia adalah yayasan yang berfokus membantu masyarakat agar bisa membaca Al-Qur'an dengan baik dan benar. Kami percaya setiap Muslim berhak dekat dengan Al-Qur'an.
+            {settings.find(s => s.id === 'general')?.site_name || "Platform Donasi"} adalah yayasan yang berfokus membantu masyarakat agar bisa membaca Al-Qur'an dengan baik dan benar. Kami percaya setiap Muslim berhak dekat dengan Al-Qur'an.
           </motion.p>
         </div>
 
