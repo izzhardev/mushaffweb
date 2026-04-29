@@ -1,5 +1,6 @@
 import React from 'react';
 import { motion } from 'motion/react';
+import { useAppDatabase } from '../hooks/useAppDatabase';
 import AboutSection from '../components/AboutSection';
 import VisionMission from '../components/VisionMission';
 import ProgramsGrid from '../components/ProgramsGrid';

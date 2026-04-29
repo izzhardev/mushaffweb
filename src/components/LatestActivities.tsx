@@ -46,12 +46,12 @@ export default function LatestActivities() {
               viewport={{ once: true }}
               className="inline-block px-4 py-1.5 rounded-full bg-primary/10 text-primary text-sm font-bold mb-4"
             >
-              Update Terbaru
+              Update Kabar
             </motion.div>
-            <h2 className="text-4xl font-bold text-slate-900">Kegiatan Terhangat</h2>
+            <h2 className="text-4xl font-bold text-slate-900">Kabar Mushaff</h2>
           </div>
           <button className="text-primary font-bold flex items-center gap-2 hover:gap-3 transition-all group">
-            Lihat Semua Kegiatan <ArrowRight className="w-5 h-5" />
+            Lihat Semua Kabar <ArrowRight className="w-5 h-5" />
           </button>
         </div>
 

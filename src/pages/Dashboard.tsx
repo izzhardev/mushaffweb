@@ -27,7 +27,11 @@ import {
   Copy,
   ExternalLink,
   HandHeart,
-  User
+  User,
+  MessageCircle,
+  Eye,
+  ChevronDown,
+  ChevronUp
 } from 'lucide-react';
 import { useAuth } from '../hooks/useAuth';
 import { useAppDatabase } from '../hooks/useAppDatabase';
@@ -36,7 +40,7 @@ import { motion, AnimatePresence } from 'motion/react';
 import { cn } from '../lib/utils';
 import { Link, useNavigate } from 'react-router-dom';
 
-type Section = 'overview' | 'donations' | 'articles' | 'gallery' | 'campaigns' | 'reports' | 'users' | 'settings' | 'slider' | 'activities' | 'volunteer' | 'profile';
+type Section = 'overview' | 'donations' | 'articles' | 'gallery' | 'campaigns' | 'reports' | 'users' | 'settings' | 'slider' | 'activities' | 'custom_contact' | 'pages' | 'volunteer' | 'profile';
 
 export default function Dashboard() {
   const { user, logout, userProfile } = useAuth();
@@ -53,6 +57,7 @@ export default function Dashboard() {
     settings,
     slider,
     activities,
+    pages,
     createItem,
     updateItem,
     deleteItem,
@@ -61,6 +66,8 @@ export default function Dashboard() {
   
   const [activeSection, setActiveSection] = useState<Section>(userProfile?.role === 'admin' ? 'overview' : 'donations');
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
+  const [isPostsOpen, setIsPostsOpen] = useState(true);
+  const [isWebsiteOpen, setIsWebsiteOpen] = useState(true);
 
   useEffect(() => {
     if (userProfile && userProfile.role === 'user' && activeSection === 'overview') {
@@ -86,13 +93,28 @@ export default function Dashboard() {
     address: ''
   });
 
+  const [customContactForm, setCustomContactForm] = useState({
+    address: '',
+    whatsapp: '',
+    email: '',
+    social_link: '',
+    image_link: '',
+    join_link: '',
+    support_link: ''
+  });
+
   const featuredGallery = settings.find(s => s.id === 'featured_gallery') || { title: 'Galeri Kegiatan', imageUrls: [] };
   const generalSettings = settings.find(s => s.id === 'general') || {};
+  const customContactSettings = settings.find(s => s.id === 'custom_contact') || {};
+
+  // Form initialization flags to prevent overwriting user input while typing
+  const [isSettingsInitialized, setIsSettingsInitialized] = useState(false);
+  const [isContactInitialized, setIsContactInitialized] = useState(false);
 
   useEffect(() => {
     if (activeSection === 'settings') {
       const currentSettings = generalSettings;
-      if (currentSettings) {
+      if (currentSettings && Object.keys(currentSettings).length > 0 && !isSettingsInitialized) {
         setSiteSettingsForm({
           site_name: currentSettings.site_name || '',
           site_logo: currentSettings.site_logo || '',
@@ -102,9 +124,30 @@ export default function Dashboard() {
           contact_phone: currentSettings.contact_phone || '',
           address: currentSettings.address || ''
         });
+        setIsSettingsInitialized(true);
       }
+    } else {
+      setIsSettingsInitialized(false);
     }
-  }, [activeSection, generalSettings]);
+
+    if (activeSection === 'custom_contact') {
+      const currentSettings = customContactSettings;
+      if (currentSettings && Object.keys(currentSettings).length > 0 && !isContactInitialized) {
+        setCustomContactForm({
+          address: currentSettings.address || '',
+          whatsapp: currentSettings.whatsapp || '',
+          email: currentSettings.email || '',
+          social_link: currentSettings.social_link || '',
+          image_link: currentSettings.image_link || '',
+          join_link: currentSettings.join_link || '',
+          support_link: currentSettings.support_link || ''
+        });
+        setIsContactInitialized(true);
+      }
+    } else {
+      setIsContactInitialized(false);
+    }
+  }, [activeSection, generalSettings, customContactSettings, isSettingsInitialized, isContactInitialized]);
 
   const handleToggleFeatured = async (imageUrl: string) => {
     const currentUrls = [...(featuredGallery.imageUrls || [])];
@@ -138,8 +181,10 @@ export default function Dashboard() {
     { id: 'volunteer', label: 'Relawan', icon: HandHeart, roles: ['admin', 'user'] },
     { id: 'gallery', label: 'Galeri', icon: ImageIcon, roles: ['admin'] },
     { id: 'articles', label: 'Artikel', icon: FileText, roles: ['admin'] },
+    { id: 'pages', label: 'Halaman', icon: FileText, roles: ['admin'] },
     { id: 'campaigns', label: 'Penggalangan', icon: TrendingUp, roles: ['admin'] },
-    { id: 'activities', label: 'Kegiatan Terhangat', icon: Star, roles: ['admin'] },
+    { id: 'activities', label: 'Kabar', icon: Star, roles: ['admin'] },
+    { id: 'custom_contact', label: 'Kontak', icon: MessageCircle, roles: ['admin'] },
     { id: 'slider', label: 'Slider Hero', icon: ImageIcon, roles: ['admin'] },
     { id: 'users', label: 'User', icon: Users, roles: ['admin'] },
     { id: 'reports', label: 'Laporan', icon: FileBarChart, roles: ['admin'] },
@@ -148,11 +193,12 @@ export default function Dashboard() {
   ].filter(item => item.roles.includes(userProfile?.role || 'user'));
 
   const handleOpenModal = (item: any = null) => {
-    if (activeSection === 'articles') {
+    if (activeSection === 'articles' || activeSection === 'pages') {
+      const type = activeSection === 'articles' ? 'article' : 'page';
       if (item) {
-        navigate(`/editor/${item.id}`);
+        navigate(`/editor/${item.id}?type=${type}`);
       } else {
-        navigate('/editor');
+        navigate(`/editor?type=${type}`);
       }
       return;
     }
@@ -266,6 +312,11 @@ export default function Dashboard() {
     alert('Pengaturan berhasil disimpan!');
   };
 
+  const handleSaveCustomContact = async () => {
+    await saveSetting('custom_contact', customContactForm);
+    alert('Kontak berhasil disimpan!');
+  };
+
   const handleSave = async (e: React.FormEvent) => {
     e.preventDefault();
     const collectionMap: Record<Section, string> = {
@@ -279,6 +330,8 @@ export default function Dashboard() {
       settings: 'settings',
       slider: 'slider',
       activities: 'activities',
+      custom_contact: 'settings',
+      pages: 'pages',
       volunteer: '',
       profile: ''
     };
@@ -306,6 +359,8 @@ export default function Dashboard() {
       settings: 'settings',
       slider: 'slider',
       activities: 'activities',
+      custom_contact: 'settings',
+      pages: 'pages',
       volunteer: '',
       profile: ''
     };
@@ -360,6 +415,31 @@ export default function Dashboard() {
                 ))}
                 <td className="px-6 lg:px-8 py-5 text-right">
                   <div className="flex justify-end gap-2 transform transition-transform group-hover:translate-x-[-4px]">
+                    {(activeSection === 'articles' || activeSection === 'pages') && (
+                      <>
+                        <a 
+                          href={activeSection === 'articles' ? `/article/${item.id}` : `/page/${item.slug}`}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          className="p-2.5 text-slate-400 hover:text-sky-500 transition-all hover:bg-sky-50 rounded-xl border border-transparent hover:border-sky-100"
+                          title="Lihat Halaman"
+                        >
+                          <Eye className="w-4 h-4" />
+                        </a>
+                        <button 
+                          onClick={() => {
+                            const baseUrl = window.location.origin;
+                            const path = activeSection === 'articles' ? `/article/${item.id}` : `/page/${item.slug}`;
+                            navigator.clipboard.writeText(baseUrl + path);
+                            alert('URL berhasil disalin!');
+                          }} 
+                          className="p-2.5 text-slate-400 hover:text-emerald-500 transition-all hover:bg-emerald-50 rounded-xl border border-transparent hover:border-emerald-100"
+                          title="Salin URL"
+                        >
+                          <Copy className="w-4 h-4" />
+                        </button>
+                      </>
+                    )}
                     <button 
                       onClick={() => handleOpenModal(item)} 
                       className="p-2.5 text-slate-400 hover:text-primary transition-all hover:bg-primary/5 rounded-xl border border-transparent hover:border-primary/10"
@@ -445,29 +525,113 @@ export default function Dashboard() {
             </button>
           </div>
           
-          <nav className="space-y-2">
-            {menuItems.map((item) => (
-              <button
-                key={item.id}
-                onClick={() => {
-                  if (item.id === 'profile') {
-                    navigate('/profile');
-                  } else {
+          <nav className="space-y-4 overflow-y-auto max-h-[calc(100vh-200px)] scrollbar-hide pr-1">
+            {/* Top Level Items */}
+            <div className="space-y-1">
+              {menuItems.filter(item => ['overview', 'donations', 'volunteer', 'users'].includes(item.id)).map((item) => (
+                <button
+                  key={item.id}
+                  onClick={() => {
                     setActiveSection(item.id as Section);
-                    setIsSidebarOpen(false); // Close mobile sidebar on selection
-                  }
-                }}
-                className={cn(
-                  "w-full flex items-center gap-3 px-4 py-3 rounded-xl font-medium transition-all text-sm lg:text-base",
-                  activeSection === item.id 
-                    ? "bg-primary text-white shadow-lg shadow-primary/20" 
-                    : "text-slate-600 hover:bg-slate-50"
-                )}
+                    setIsSidebarOpen(false);
+                  }}
+                  className={cn(
+                    "w-full flex items-center gap-3 px-4 py-3 rounded-xl font-medium transition-all text-sm lg:text-base",
+                    activeSection === item.id 
+                      ? "bg-primary text-white shadow-lg shadow-primary/20" 
+                      : "text-slate-600 hover:bg-slate-50"
+                  )}
+                >
+                  <item.icon className="w-5 h-5 flex-shrink-0" />
+                  <span className="truncate">{item.label}</span>
+                </button>
+              ))}
+            </div>
+
+            {/* Post Group */}
+            <div className="space-y-1">
+              <button 
+                onClick={() => setIsPostsOpen(!isPostsOpen)}
+                className="w-full flex items-center justify-between px-4 py-2 text-xs font-bold text-slate-400 uppercase tracking-widest hover:text-slate-600 transition-colors"
               >
-                <item.icon className="w-5 h-5" />
-                {item.label}
+                Post
+                {isPostsOpen ? <ChevronUp className="w-3 h-3" /> : <ChevronDown className="w-3 h-3" />}
               </button>
-            ))}
+              {isPostsOpen && (
+                <div className="space-y-1 mt-1">
+                  {menuItems.filter(item => ['gallery', 'articles', 'pages', 'campaigns', 'reports'].includes(item.id)).map((item) => (
+                    <button
+                      key={item.id}
+                      onClick={() => {
+                        setActiveSection(item.id as Section);
+                        setIsSidebarOpen(false);
+                      }}
+                      className={cn(
+                        "w-full flex items-center gap-3 px-4 py-2.5 rounded-xl font-medium transition-all text-sm",
+                        activeSection === item.id 
+                          ? "bg-primary/10 text-primary border border-primary/20" 
+                          : "text-slate-600 hover:bg-slate-50"
+                      )}
+                    >
+                      <item.icon className="w-4 h-4 flex-shrink-0" />
+                      <span className="truncate">{item.label}</span>
+                    </button>
+                  ))}
+                </div>
+              )}
+            </div>
+
+            {/* Website Group */}
+            <div className="space-y-1">
+              <button 
+                onClick={() => setIsWebsiteOpen(!isWebsiteOpen)}
+                className="w-full flex items-center justify-between px-4 py-2 text-xs font-bold text-slate-400 uppercase tracking-widest hover:text-slate-600 transition-colors"
+              >
+                Website
+                {isWebsiteOpen ? <ChevronUp className="w-3 h-3" /> : <ChevronDown className="w-3 h-3" />}
+              </button>
+              {isWebsiteOpen && (
+                <div className="space-y-1 mt-1">
+                  {menuItems.filter(item => ['slider', 'activities', 'custom_contact', 'settings'].includes(item.id)).map((item) => (
+                    <button
+                      key={item.id}
+                      onClick={() => {
+                        setActiveSection(item.id as Section);
+                        setIsSidebarOpen(false);
+                      }}
+                      className={cn(
+                        "w-full flex items-center gap-3 px-4 py-2.5 rounded-xl font-medium transition-all text-sm",
+                        activeSection === item.id 
+                          ? "bg-primary/10 text-primary border border-primary/20" 
+                          : "text-slate-600 hover:bg-slate-50"
+                      )}
+                    >
+                      <item.icon className="w-4 h-4 flex-shrink-0" />
+                      <span className="truncate">{item.label}</span>
+                    </button>
+                  ))}
+                </div>
+              )}
+            </div>
+
+            {/* Profile (Bottom) */}
+            <div className="pt-4 border-t border-slate-50">
+              {menuItems.filter(item => item.id === 'profile').map((item) => (
+                <button
+                  key={item.id}
+                  onClick={() => {
+                    navigate('/profile');
+                    setIsSidebarOpen(false);
+                  }}
+                  className={cn(
+                    "w-full flex items-center gap-3 px-4 py-3 rounded-xl font-medium transition-all text-sm lg:text-base text-slate-600 hover:bg-slate-50"
+                  )}
+                >
+                  <item.icon className="w-5 h-5 flex-shrink-0" />
+                  <span className="truncate">{item.label}</span>
+                </button>
+              ))}
+            </div>
           </nav>
         </div>
 
@@ -756,6 +920,11 @@ export default function Dashboard() {
               { key: 'authorName', label: 'Penulis' }
             ])}
 
+            {activeSection === 'pages' && renderManagementSection('Manajemen Halaman', pages, [
+              { key: 'title', label: 'Judul' },
+              { key: 'slug', label: 'Slug' }
+            ])}
+
             {activeSection === 'gallery' && (
               <div className="space-y-6 lg:space-y-8">
                 <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
@@ -927,7 +1096,7 @@ export default function Dashboard() {
               { key: 'role', label: 'Role' }
             ])}
 
-            {activeSection === 'activities' && renderManagementSection('Manajemen Kegiatan Terhangat', activities, [
+            {activeSection === 'activities' && renderManagementSection('Manajemen Kabar Mushaff', activities, [
               { key: 'image', label: 'Gambar' },
               { key: 'title', label: 'Judul' },
               { key: 'desc', label: 'Deskripsi' }
@@ -1024,6 +1193,109 @@ export default function Dashboard() {
                       <p className="text-slate-500 font-medium text-sm lg:text-base">Belum ada materi aktif.</p>
                     </div>
                   )}
+                </div>
+              </div>
+            )}
+
+            {activeSection === 'custom_contact' && (
+              <div className="bg-white rounded-3xl p-6 lg:p-10 border border-slate-100 shadow-sm">
+                <div className="max-w-4xl">
+                  <h2 className="text-xl lg:text-2xl font-black text-slate-900 mb-8 flex items-center gap-3">
+                    <MessageCircle className="w-8 h-8 text-primary" />
+                    Manajemen Kontak Hubungi Kami
+                  </h2>
+
+                  <div className="space-y-8">
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                      <div className="space-y-2">
+                        <label className="text-xs font-bold text-slate-500 uppercase tracking-wider ml-1">WhatsApp (No HP)</label>
+                        <input 
+                          type="text"
+                          value={customContactForm.whatsapp}
+                          onChange={(e) => setCustomContactForm({ ...customContactForm, whatsapp: e.target.value })}
+                          placeholder="0812..."
+                          className="w-full bg-slate-50 border border-slate-200 rounded-xl lg:rounded-2xl px-4 lg:px-6 py-3 lg:py-4 font-bold text-slate-900 focus:ring-2 focus:ring-primary outline-none transition-all text-sm"
+                        />
+                      </div>
+                      <div className="space-y-2">
+                        <label className="text-xs font-bold text-slate-500 uppercase tracking-wider ml-1">Email Kontak</label>
+                        <input 
+                          type="email"
+                          value={customContactForm.email}
+                          onChange={(e) => setCustomContactForm({ ...customContactForm, email: e.target.value })}
+                          placeholder="email@example.com"
+                          className="w-full bg-slate-50 border border-slate-200 rounded-xl lg:rounded-2xl px-4 lg:px-6 py-3 lg:py-4 font-bold text-slate-900 focus:ring-2 focus:ring-primary outline-none transition-all text-sm"
+                        />
+                      </div>
+                    </div>
+
+                    <div className="space-y-2">
+                      <label className="text-xs font-bold text-slate-500 uppercase tracking-wider ml-1">Alamat Lengkap</label>
+                      <input 
+                        type="text"
+                        value={customContactForm.address}
+                        onChange={(e) => setCustomContactForm({ ...customContactForm, address: e.target.value })}
+                        placeholder="Alamat kantor / yayasan..."
+                        className="w-full bg-slate-50 border border-slate-200 rounded-xl lg:rounded-2xl px-4 lg:px-6 py-3 lg:py-4 font-medium text-slate-900 focus:ring-2 focus:ring-primary outline-none transition-all text-sm"
+                      />
+                    </div>
+
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-6 pt-6 border-t border-slate-50">
+                      <div className="space-y-2">
+                        <label className="text-xs font-bold text-slate-500 uppercase tracking-wider ml-1">Link Instagram / Sosial Media</label>
+                        <input 
+                          type="text"
+                          value={customContactForm.social_link}
+                          onChange={(e) => setCustomContactForm({ ...customContactForm, social_link: e.target.value })}
+                          placeholder="https://instagram.com/..."
+                          className="w-full bg-slate-50 border border-slate-200 rounded-xl lg:rounded-2xl px-4 lg:px-6 py-3 lg:py-4 font-medium text-slate-900 focus:ring-2 focus:ring-primary outline-none transition-all text-sm"
+                        />
+                      </div>
+                      <div className="space-y-2">
+                        <label className="text-xs font-bold text-slate-500 uppercase tracking-wider ml-1">Link Image (Background/Ilustrasi)</label>
+                        <input 
+                          type="text"
+                          value={customContactForm.image_link}
+                          onChange={(e) => setCustomContactForm({ ...customContactForm, image_link: e.target.value })}
+                          placeholder="https://... (untuk ilustrasi di blok kontak)"
+                          className="w-full bg-slate-50 border border-slate-200 rounded-xl lg:rounded-2xl px-4 lg:px-6 py-3 lg:py-4 font-medium text-slate-900 focus:ring-2 focus:ring-primary outline-none transition-all text-sm"
+                        />
+                      </div>
+                    </div>
+
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                      <div className="space-y-2">
+                        <label className="text-xs font-bold text-slate-500 uppercase tracking-wider ml-1">Link Gabung (WhatsApp Group/Linktree)</label>
+                        <input 
+                          type="text"
+                          value={customContactForm.join_link}
+                          onChange={(e) => setCustomContactForm({ ...customContactForm, join_link: e.target.value })}
+                          placeholder="https://chat.whatsapp.com/..."
+                          className="w-full bg-slate-50 border border-slate-200 rounded-xl lg:rounded-2xl px-4 lg:px-6 py-3 lg:py-4 font-medium text-slate-900 focus:ring-2 focus:ring-primary outline-none transition-all text-sm"
+                        />
+                      </div>
+                      <div className="space-y-2">
+                        <label className="text-xs font-bold text-slate-500 uppercase tracking-wider ml-1">Link Dukung (Portal Donasi Utama)</label>
+                        <input 
+                          type="text"
+                          value={customContactForm.support_link}
+                          onChange={(e) => setCustomContactForm({ ...customContactForm, support_link: e.target.value })}
+                          placeholder="https://..."
+                          className="w-full bg-slate-50 border border-slate-200 rounded-xl lg:rounded-2xl px-4 lg:px-6 py-3 lg:py-4 font-medium text-slate-900 focus:ring-2 focus:ring-primary outline-none transition-all text-sm"
+                        />
+                      </div>
+                    </div>
+
+                    <div className="text-right pt-4">
+                      <button 
+                        onClick={handleSaveCustomContact}
+                        className="w-full sm:w-auto bg-primary text-white px-8 lg:px-10 py-3 lg:py-4 rounded-xl lg:rounded-2xl font-bold hover:bg-primary/90 transition-all shadow-lg shadow-primary/20 flex items-center justify-center gap-2 ml-auto"
+                      >
+                        <Save className="w-5 h-5" />
+                        Simpan Pengaturan Kontak
+                      </button>
+                    </div>
+                  </div>
                 </div>
               </div>
             )}

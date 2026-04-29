@@ -5,11 +5,12 @@ import { useAppDatabase } from '../hooks/useAppDatabase';
 export default function ContactSection() {
   const { settings } = useAppDatabase();
   const siteSettings = settings.find(s => s.id === 'general') || {};
+  const customContact = settings.find(s => s.id === 'custom_contact') || {};
 
   const contacts = [
-    { label: 'Telepon / WA', value: siteSettings.contact_phone || '0851-5546-6551', icon: MessageCircle, link: `https://wa.me/${(siteSettings.contact_phone || '0851-5546-6551').replace(/\D/g, '')}` },
-    { label: 'Instagram', value: '@mushaff.indonesia', icon: Instagram, link: 'https://www.instagram.com/mushaff.indonesia' },
-    { label: 'Email', value: siteSettings.contact_email || 'info@mushaffindonesia.org', icon: Globe, link: `mailto:${siteSettings.contact_email || 'info@mushaffindonesia.org'}` },
+    { label: 'Telepon / WA', value: customContact.whatsapp || siteSettings.contact_phone || '0851-5546-6551', icon: MessageCircle, link: `https://wa.me/${(customContact.whatsapp || siteSettings.contact_phone || '0851-5546-6551').replace(/\D/g, '')}` },
+    { label: 'Sosial Media', value: customContact.social_link ? (customContact.social_link.includes('instagram') ? '@mushaff.indonesia' : 'Lihat Profil') : '@mushaff.indonesia', icon: Instagram, link: customContact.social_link || 'https://www.instagram.com/mushaff.indonesia' },
+    { label: 'Email', value: customContact.email || siteSettings.contact_email || 'info@mushaffindonesia.org', icon: Globe, link: `mailto:${customContact.email || siteSettings.contact_email || 'info@mushaffindonesia.org'}` },
     { label: 'Website', value: (siteSettings.site_name?.toLowerCase().replace(/\s+/g, '') || 'mushaffindonesia') + '.org', icon: Globe, link: '#' },
   ];
 
@@ -31,7 +32,7 @@ export default function ContactSection() {
                 <div>
                   <h4 className="font-bold text-slate-900 mb-2">Alamat</h4>
                   <p className="text-slate-600 leading-relaxed">
-                    {siteSettings.address || "Jl. Lapang Tridaya, Desa Cikalong, Kab. Bandung Barat, Jawa Barat"}
+                    {customContact.address || siteSettings.address || "Jl. Lapang Tridaya, Desa Cikalong, Kab. Bandung Barat, Jawa Barat"}
                   </p>
                 </div>
               </div>
@@ -58,12 +59,18 @@ export default function ContactSection() {
             </div>
 
             <div className="flex flex-wrap gap-4">
-              <button className="px-8 py-4 bg-primary text-white rounded-full font-bold hover:bg-primary/90 transition-all shadow-lg shadow-primary/20">
+              <a 
+                href={customContact.join_link || '#'}
+                className="px-8 py-4 bg-primary text-white rounded-full font-bold hover:bg-primary/90 transition-all shadow-lg shadow-primary/20"
+              >
                 Gabung Bersama Kami
-              </button>
-              <button className="px-8 py-4 bg-white text-primary border-2 border-primary rounded-full font-bold hover:bg-primary/5 transition-all">
+              </a>
+              <a 
+                href={customContact.support_link || '#'}
+                className="px-8 py-4 bg-white text-primary border-2 border-primary rounded-full font-bold hover:bg-primary/5 transition-all"
+              >
                 Dukung Dakwah Ini
-              </button>
+              </a>
             </div>
           </motion.div>
 
@@ -75,10 +82,11 @@ export default function ContactSection() {
           >
             {/* Placeholder for Map or Image */}
             <img 
-              src="https://res.cloudinary.com/dgezrzjnb/image/upload/v1776780950/cycwu4porqzodhuyf9zo.png" 
+              src={customContact.image_link || "https://res.cloudinary.com/dgezrzjnb/image/upload/v1776780950/cycwu4porqzodhuyf9zo.png"} 
               alt="Location" 
               className="w-full h-full object-cover" 
               style={{ objectPosition: 'right' }}
+              referrerPolicy="no-referrer"
             />
           </motion.div>
         </div>

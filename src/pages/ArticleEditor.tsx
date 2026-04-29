@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { useParams, useNavigate } from 'react-router-dom';
+import { useParams, useNavigate, useLocation } from 'react-router-dom';
 import { 
   Save, 
   ArrowLeft, 
@@ -21,12 +21,17 @@ import { cn } from '../lib/utils';
 export default function ArticleEditor() {
   const { id } = useParams();
   const navigate = useNavigate();
+  const location = useLocation();
   const { user, userProfile } = useAuth();
-  const { articles, gallery, media, createItem, updateItem } = useAppDatabase();
+  const searchParams = new URLSearchParams(location.search);
+  const type = searchParams.get('type') || (location.pathname.includes('/page') ? 'page' : 'article');
+
+  const { articles, pages, gallery, media, settings, createItem, updateItem } = useAppDatabase();
   
   const [title, setTitle] = useState('');
   const [content, setContent] = useState('');
   const [category, setCategory] = useState('');
+  const [slug, setSlug] = useState('');
   const [image, setImage] = useState('');
   const [mode, setMode] = useState<'edit' | 'preview'>('edit');
   const [editorMode, setEditorMode] = useState<'rich' | 'html'>('rich');
@@ -35,16 +40,33 @@ export default function ArticleEditor() {
   const [isUploading, setIsUploading] = useState(false);
 
   useEffect(() => {
-    if (id && articles.length > 0) {
-      const article = articles.find(a => a.id === id);
-      if (article) {
-        setTitle(article.title || '');
-        setContent(article.content || '');
-        setCategory(article.category || '');
-        setImage(article.image || '');
+    if (id) {
+      if (type === 'page' && pages.length > 0) {
+        const page = pages.find(p => p.id === id);
+        if (page) {
+          setTitle(page.title || '');
+          setContent(page.content || '');
+          setSlug(page.slug || '');
+          setImage(page.image || '');
+        }
+      } else if (articles.length > 0) {
+        const article = articles.find(a => a.id === id);
+        if (article) {
+          setTitle(article.title || '');
+          setContent(article.content || '');
+          setCategory(article.category || '');
+          setImage(article.image || '');
+        }
       }
     }
-  }, [id, articles]);
+  }, [id, articles, pages, type]);
+
+  useEffect(() => {
+    if (!id && !slug && title && type === 'page') {
+      const generatedSlug = title.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/(^-|-$)+/g, '');
+      setSlug(generatedSlug);
+    }
+  }, [title, id, type, slug]);
 
   const handleFileUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
@@ -107,24 +129,31 @@ export default function ArticleEditor() {
     }
 
     setIsSaving(true);
-    const data = {
+    const data = type === 'article' ? {
       title,
       content,
       category,
       image,
       authorUid: user?.uid,
       authorName: user?.displayName || userProfile?.displayName || 'Admin',
+    } : {
+      title,
+      content,
+      slug: slug || title.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/(^-|-$)+/g, ''),
+      image,
     };
+
+    const collectionName = type === 'article' ? 'articles' : 'pages';
 
     try {
       if (id) {
-        await updateItem('articles', id, data);
+        await updateItem(collectionName, id, data);
       } else {
-        await createItem('articles', data);
+        await createItem(collectionName, data);
       }
       navigate('/dashboard');
     } catch (error) {
-      console.error('Error saving article:', error);
+      console.error(`Error saving ${type}:`, error);
     } finally {
       setIsSaving(false);
     }
@@ -148,7 +177,7 @@ export default function ArticleEditor() {
               <ArrowLeft className="w-6 h-6 text-slate-600" />
             </button>
             <h1 className="text-xl font-bold text-slate-900">
-              {id ? 'Edit Artikel' : 'Tulis Artikel Baru'}
+              {id ? `Edit ${type === 'article' ? 'Artikel' : 'Halaman'}` : `Tambah ${type === 'article' ? 'Artikel' : 'Halaman'} Baru`}
             </h1>
           </div>
 
@@ -375,20 +404,34 @@ export default function ArticleEditor() {
                 )}
               </div>
 
-              <div className="space-y-4">
-                <label className="text-sm font-bold text-slate-700 block ml-1">Kategori</label>
-                <select
-                  value={category}
-                  onChange={(e) => setCategory(e.target.value)}
-                  className="w-full bg-slate-50 border border-slate-200 rounded-xl px-4 py-3 text-sm focus:ring-2 focus:ring-primary outline-none appearance-none"
-                >
-                  <option value="">Pilih Kategori</option>
-                  <option value="Berita">Berita</option>
-                  <option value="Inspirasi">Inspirasi</option>
-                  <option value="Kegiatan">Kegiatan</option>
-                  <option value="Edukasi">Edukasi</option>
-                </select>
-              </div>
+              {type === 'article' ? (
+                <div className="space-y-4">
+                  <label className="text-sm font-bold text-slate-700 block ml-1">Kategori</label>
+                  <select
+                    value={category}
+                    onChange={(e) => setCategory(e.target.value)}
+                    className="w-full bg-slate-50 border border-slate-200 rounded-xl px-4 py-3 text-sm focus:ring-2 focus:ring-primary outline-none appearance-none"
+                  >
+                    <option value="">Pilih Kategori</option>
+                    <option value="Berita">Berita</option>
+                    <option value="Inspirasi">Inspirasi</option>
+                    <option value="Kegiatan">Kegiatan</option>
+                    <option value="Edukasi">Edukasi</option>
+                  </select>
+                </div>
+              ) : (
+                <div className="space-y-4">
+                  <label className="text-sm font-bold text-slate-700 block ml-1">Slug Halaman</label>
+                  <input
+                    type="text"
+                    value={slug}
+                    onChange={(e) => setSlug(e.target.value)}
+                    placeholder="judul-halaman"
+                    className="w-full bg-slate-50 border border-slate-200 rounded-xl px-4 py-3 text-sm focus:ring-2 focus:ring-primary outline-none"
+                  />
+                  <p className="text-[10px] text-slate-400 ml-1 italic font-medium">Link: /page/{slug || 'judul-halaman'}</p>
+                </div>
+              )}
             </div>
 
             <div className="bg-primary/5 rounded-[2.5rem] p-8 border border-primary/10">

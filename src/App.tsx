@@ -20,6 +20,7 @@ import Login from './pages/Login';
 import ArticleEditor from './pages/ArticleEditor';
 import CampaignEditor from './pages/CampaignEditor';
 import ArticleDetail from './pages/ArticleDetail';
+import PageDetail from './pages/PageDetail';
 import Profile from './pages/Profile';
 import { AuthProvider, useAuth } from './hooks/useAuth';
 import { useLocation } from 'react-router-dom';
@@ -62,6 +63,7 @@ function AppContent() {
           <Route path="/donate/:id" element={<DonationDetail />} />
           <Route path="/donation-confirmation/:id" element={<DonationConfirmation />} />
           <Route path="/article/:id" element={<ArticleDetail />} />
+          <Route path="/page/:slug" element={<PageDetail />} />
           <Route path="/login" element={<Login />} />
           <Route path="/editor" element={<ArticleEditor />} />
           <Route path="/editor/:id" element={<ArticleEditor />} />
