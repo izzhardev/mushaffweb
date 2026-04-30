@@ -11,6 +11,30 @@ export default function NewsSection() {
     .sort((a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime())
     .slice(0, 3);
 
+  const formatDate = (dateValue: any) => {
+    if (!dateValue) return '';
+    try {
+      let date: Date;
+      if (dateValue?.toDate) {
+        date = dateValue.toDate();
+      } else if (typeof dateValue === 'string') {
+        date = new Date(dateValue);
+      } else {
+        date = new Date(dateValue);
+      }
+      
+      if (isNaN(date.getTime())) return 'Format Salah';
+      
+      return date.toLocaleDateString('id-ID', { 
+        day: 'numeric', 
+        month: 'short', 
+        year: 'numeric' 
+      });
+    } catch (e) {
+      return 'Format Salah';
+    }
+  };
+
   if (latestArticles.length === 0) return null;
 
   return (
@@ -64,7 +88,7 @@ export default function NewsSection() {
                 <div className="flex items-center gap-4 text-xs text-slate-400 mb-4">
                   <span className="flex items-center gap-1.5">
                     <Calendar className="w-3.5 h-3.5" />
-                    {new Date(article.createdAt).toLocaleDateString('id-ID', { day: 'numeric', month: 'short', year: 'numeric' })}
+                    {formatDate(article.createdAt)}
                   </span>
                   <span className="flex items-center gap-1.5">
                     <User className="w-3.5 h-3.5" />
@@ -78,7 +102,7 @@ export default function NewsSection() {
                 
                 <div className="mt-auto pt-6 border-t border-slate-50">
                   <Link 
-                    to={`/article/${article.id}`}
+                    to={`/article/${article.slug || article.id}`}
                     className="text-primary text-sm font-bold flex items-center gap-2 hover:gap-3 transition-all"
                   >
                     Baca Selengkapnya <ArrowRight className="w-4 h-4" />

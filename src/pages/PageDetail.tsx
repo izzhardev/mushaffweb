@@ -1,14 +1,12 @@
 import React from 'react';
-import { useParams, Link } from 'react-router-dom';
+import { useParams, useNavigate, Link } from 'react-router-dom';
 import { motion } from 'motion/react';
-import { ArrowLeft, Clock, Share2 } from 'lucide-react';
+import { ArrowLeft, Clock, Share2, Facebook, Twitter, Link as LinkIcon, User, Calendar } from 'lucide-react';
 import { useAppDatabase } from '../hooks/useAppDatabase';
-import Navbar from '../components/Navbar';
-import Footer from '../components/Footer';
-import Markdown from 'react-markdown';
 
 export default function PageDetail() {
   const { slug } = useParams();
+  const navigate = useNavigate();
   const { pages, settings } = useAppDatabase();
   const siteSettings = settings.find(s => s.id === 'general') || {};
 
@@ -27,69 +25,111 @@ export default function PageDetail() {
   }
 
   return (
-    <div className="min-h-screen bg-white font-sans">
-      <Navbar />
+    <div className="bg-slate-50 min-h-screen font-sans">
       
-      <main className="pt-32 pb-24">
-        <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
-          <Link 
-            to="/" 
-            className="inline-flex items-center gap-2 text-slate-500 hover:text-primary font-bold mb-8 transition-colors group"
-          >
-            <ArrowLeft className="w-5 h-5 group-hover:-translate-x-1 transition-transform" />
-            Kembali
-          </Link>
+      {/* HERO */}
+      <div className="relative w-full overflow-hidden">
+        <div className="h-[60vh] min-h-[450px] lg:h-[75vh]">
+          <img 
+            src={page.image || "https://images.unsplash.com/photo-1497215728101-856f4ea42174?auto=format&fit=crop&q=80"} 
+            alt={page.title}
+            className="w-full h-full object-cover object-center"
+            referrerPolicy="no-referrer"
+          />
+          <div className="absolute inset-0 bg-gradient-to-t from-slate-900 via-slate-900/40 to-transparent" />
+        </div>
 
-          <header className="mb-12">
-            <h1 className="text-4xl lg:text-5xl font-black text-slate-900 leading-tight mb-6">
+        {/* HERO CONTENT */}
+        <div className="absolute bottom-0 left-0 w-full p-6 lg:p-16 pb-24 lg:pb-36">
+          <div className="max-w-5xl mx-auto">
+            <div className="flex items-center gap-4 mb-4">
+              <button 
+                onClick={() => navigate(-1)} 
+                className="bg-white/20 backdrop-blur-md text-white p-2 rounded-full hover:bg-white/30 transition-all shadow-lg"
+              >
+                <ArrowLeft className="w-4 h-4" />
+              </button>
+              <span className="bg-primary px-4 py-1 rounded-full text-white text-xs font-bold uppercase tracking-wider shadow-lg">
+                Halaman
+              </span>
+            </div>
+
+            <h1 className="text-3xl sm:text-4xl lg:text-6xl font-black text-white leading-tight max-w-4xl drop-shadow-xl">
               {page.title}
             </h1>
+          </div>
+        </div>
+
+        {/* Fade bottom shadow to blend with content */}
+        <div className="absolute bottom-0 left-0 w-full h-32 bg-gradient-to-b from-transparent to-slate-50"></div>
+      </div>
+
+      {/* MAIN CONTENT BLOCK */}
+      <div className="relative z-10 -mt-12 lg:-mt-20 pb-20">
+        <div className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="bg-white rounded-2xl lg:rounded-3xl shadow-lg p-6 sm:p-8 lg:p-12">
             
-            {page.image && (
-              <motion.div 
-                initial={{ opacity: 0, y: 20 }}
-                animate={{ opacity: 1, y: 0 }}
-                className="aspect-video w-full rounded-[2.5rem] overflow-hidden mb-12 shadow-2xl shadow-slate-200"
-              >
-                <img 
-                  src={page.image} 
-                  alt={page.title}
-                  className="w-full h-full object-cover"
-                  referrerPolicy="no-referrer"
+            <div className="flex flex-col lg:flex-row gap-8 lg:gap-16">
+              
+              {/* SIDEBAR SHARE */}
+              <div className="flex lg:flex-col gap-3 lg:sticky lg:top-32 h-fit order-2 lg:order-1">
+                <button className="p-2.5 rounded-full bg-slate-100 text-slate-500 hover:text-primary hover:bg-primary/10 transition shadow-sm border border-slate-50">
+                  <Facebook className="w-4 h-4" />
+                </button>
+                <button className="p-2.5 rounded-full bg-slate-100 text-slate-500 hover:text-primary hover:bg-primary/10 transition shadow-sm border border-slate-50">
+                  <Twitter className="w-4 h-4" />
+                </button>
+                <button 
+                  onClick={() => {
+                    navigator.clipboard.writeText(window.location.href);
+                    alert('Link disalin!');
+                  }}
+                  className="p-2.5 rounded-full bg-slate-100 text-slate-500 hover:text-primary hover:bg-primary/10 transition shadow-sm border border-slate-50"
+                >
+                  <LinkIcon className="w-4 h-4" />
+                </button>
+              </div>
+
+              {/* ARTICLE BODY */}
+              <div className="flex-1 min-w-0 order-1 lg:order-2">
+                <article 
+                  className="
+                    prose prose-slate 
+                    prose-sm sm:prose-base lg:prose-lg 
+                    max-w-none
+                    prose-headings:font-black 
+                    prose-headings:text-slate-900
+                    prose-p:text-slate-600 
+                    prose-p:leading-relaxed
+                    prose-li:text-slate-600
+                    prose-ol:list-decimal
+                    prose-ul:list-disc
+                    prose-img:rounded-2xl 
+                    prose-img:max-w-full 
+                    prose-img:h-auto
+                    prose-a:text-primary 
+                    break-words
+                  "
+                  dangerouslySetInnerHTML={{ __html: page.content }}
                 />
-              </motion.div>
-            )}
-          </header>
 
-          <article className="prose prose-slate prose-lg max-w-none">
-            <div className="markdown-body">
-              <Markdown>{page.content}</Markdown>
-            </div>
-          </article>
+                <div className="mt-16 pt-8 border-t border-slate-100 flex items-center justify-between">
+                  <div className="text-xs text-slate-400 font-medium italic">
+                    Dikelola oleh {siteSettings.site_name || "Mushaff Indonesia"}
+                  </div>
+                  <button 
+                    onClick={() => window.scrollTo({ top: 0, behavior: 'smooth' })}
+                    className="text-slate-400 hover:text-primary transition-all text-xs font-bold uppercase tracking-widest"
+                  >
+                    Ke Atas
+                  </button>
+                </div>
+              </div>
 
-          <div className="mt-16 pt-8 border-t border-slate-100 flex items-center justify-between">
-            <div className="flex items-center gap-4">
-              <button 
-                onClick={() => window.scrollTo({ top: 0, behavior: 'smooth' })}
-                className="text-slate-400 hover:text-primary transition-colors"
-                title="Ke Atas"
-              >
-                Top
-              </button>
-            </div>
-            <div className="flex items-center gap-4">
-              <button 
-                className="p-3 bg-slate-50 text-slate-600 rounded-xl hover:bg-primary hover:text-white transition-all shadow-sm"
-                title="Bagikan"
-              >
-                <Share2 className="w-5 h-5" />
-              </button>
             </div>
           </div>
         </div>
-      </main>
-
-      <Footer />
+      </div>
     </div>
   );
 }

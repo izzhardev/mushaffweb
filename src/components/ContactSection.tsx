@@ -14,6 +14,8 @@ export default function ContactSection() {
     { label: 'Website', value: (siteSettings.site_name?.toLowerCase().replace(/\s+/g, '') || 'mushaffindonesia') + '.org', icon: Globe, link: '#' },
   ];
 
+  const customLinks = customContact.custom_links || [];
+
   return (
     <section id="kontak" className="py-24 bg-slate-50 relative overflow-hidden">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
@@ -56,6 +58,28 @@ export default function ContactSection() {
                   </a>
                 ))}
               </div>
+
+              {customLinks.length > 0 && (
+                <div className="grid sm:grid-cols-2 gap-6">
+                  {customLinks.map((link: any, idx: number) => (
+                    <a
+                      key={idx}
+                      href={link.url}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="flex items-center gap-4 p-4 bg-white rounded-2xl border border-slate-100 hover:border-primary hover:shadow-md transition-all group"
+                    >
+                      <div className="w-10 h-10 bg-slate-50 rounded-xl flex items-center justify-center text-slate-400 group-hover:bg-primary/10 group-hover:text-primary transition-colors">
+                        <Globe className="w-5 h-5" />
+                      </div>
+                      <div>
+                        <div className="text-[10px] font-bold text-slate-400 uppercase tracking-widest">Tautan</div>
+                        <div className="text-sm font-bold text-slate-700">{link.title}</div>
+                      </div>
+                    </a>
+                  ))}
+                </div>
+              )}
             </div>
 
             <div className="flex flex-wrap gap-4">

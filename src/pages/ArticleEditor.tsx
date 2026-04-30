@@ -55,6 +55,7 @@ export default function ArticleEditor() {
           setTitle(article.title || '');
           setContent(article.content || '');
           setCategory(article.category || '');
+          setSlug(article.slug || '');
           setImage(article.image || '');
         }
       }
@@ -62,11 +63,23 @@ export default function ArticleEditor() {
   }, [id, articles, pages, type]);
 
   useEffect(() => {
-    if (!id && !slug && title && type === 'page') {
-      const generatedSlug = title.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/(^-|-$)+/g, '');
-      setSlug(generatedSlug);
+    if (!id && title) {
+      let baseSlug = title.toLowerCase()
+        .replace(/[^a-z0-9]+/g, '-')
+        .replace(/(^-|-$)+/g, '');
+      
+      let finalSlug = baseSlug;
+      let counter = 1;
+      const existingItems = type === 'article' ? articles : pages;
+
+      while (existingItems.some(item => item.slug === finalSlug)) {
+        finalSlug = `${baseSlug}-${counter}`;
+        counter++;
+      }
+      
+      setSlug(finalSlug);
     }
-  }, [title, id, type, slug]);
+  }, [title, id, type, articles, pages]);
 
   const handleFileUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
@@ -129,19 +142,19 @@ export default function ArticleEditor() {
     }
 
     setIsSaving(true);
-    const data = type === 'article' ? {
+    const commonData = {
       title,
       content,
-      category,
       image,
+      slug: slug || title.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/(^-|-$)+/g, ''),
+    };
+
+    const data = type === 'article' ? {
+      ...commonData,
+      category,
       authorUid: user?.uid,
       authorName: user?.displayName || userProfile?.displayName || 'Admin',
-    } : {
-      title,
-      content,
-      slug: slug || title.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/(^-|-$)+/g, ''),
-      image,
-    };
+    } : commonData;
 
     const collectionName = type === 'article' ? 'articles' : 'pages';
 
@@ -404,7 +417,7 @@ export default function ArticleEditor() {
                 )}
               </div>
 
-              {type === 'article' ? (
+              {type === 'article' && (
                 <div className="space-y-4">
                   <label className="text-sm font-bold text-slate-700 block ml-1">Kategori</label>
                   <select
@@ -419,19 +432,26 @@ export default function ArticleEditor() {
                     <option value="Edukasi">Edukasi</option>
                   </select>
                 </div>
-              ) : (
-                <div className="space-y-4">
-                  <label className="text-sm font-bold text-slate-700 block ml-1">Slug Halaman</label>
-                  <input
-                    type="text"
-                    value={slug}
-                    onChange={(e) => setSlug(e.target.value)}
-                    placeholder="judul-halaman"
-                    className="w-full bg-slate-50 border border-slate-200 rounded-xl px-4 py-3 text-sm focus:ring-2 focus:ring-primary outline-none"
-                  />
-                  <p className="text-[10px] text-slate-400 ml-1 italic font-medium">Link: /page/{slug || 'judul-halaman'}</p>
-                </div>
               )}
+
+              <div className="space-y-4">
+                <label className="text-sm font-bold text-slate-700 block ml-1">
+                  {type === 'article' ? 'Slug Artikel' : 'Slug Halaman'}
+                </label>
+                <input
+                  type="text"
+                  value={slug}
+                  onChange={(e) => {
+                    const formattedValue = e.target.value.toLowerCase()
+                      .replace(/[^a-z0-9]+/g, '-')
+                      .replace(/^-+/, ''); // Allow trailing hyphens while typing
+                    setSlug(formattedValue);
+                  }}
+                  placeholder="judul-konten"
+                  className="w-full bg-slate-50 border border-slate-200 rounded-xl px-4 py-3 text-sm focus:ring-2 focus:ring-primary outline-none"
+                />
+                <p className="text-[10px] text-slate-400 ml-1 italic font-medium">Link: /{type === 'article' ? 'article' : 'page'}/{slug || 'judul-konten'}</p>
+              </div>
             </div>
 
             <div className="bg-primary/5 rounded-[2.5rem] p-8 border border-primary/10">

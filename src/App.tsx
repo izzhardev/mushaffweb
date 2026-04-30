@@ -62,7 +62,7 @@ function AppContent() {
           <Route path="/donate" element={<DonationDetail />} />
           <Route path="/donate/:id" element={<DonationDetail />} />
           <Route path="/donation-confirmation/:id" element={<DonationConfirmation />} />
-          <Route path="/article/:id" element={<ArticleDetail />} />
+          <Route path="/article/:slug" element={<ArticleDetail />} />
           <Route path="/page/:slug" element={<PageDetail />} />
           <Route path="/login" element={<Login />} />
           <Route path="/editor" element={<ArticleEditor />} />

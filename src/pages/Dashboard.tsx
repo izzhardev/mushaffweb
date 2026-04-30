@@ -82,6 +82,7 @@ export default function Dashboard() {
   const [showMediaLibrary, setShowMediaLibrary] = useState(false);
   const [showFeaturedSettings, setShowFeaturedSettings] = useState(false);
   const [galleryTitle, setGalleryTitle] = useState('');
+  const [visibleGalleryCount, setVisibleGalleryCount] = useState(16);
   
   const [siteSettingsForm, setSiteSettingsForm] = useState({
     site_name: '',
@@ -100,7 +101,8 @@ export default function Dashboard() {
     social_link: '',
     image_link: '',
     join_link: '',
-    support_link: ''
+    support_link: '',
+    custom_links: [] as { title: string, url: string }[]
   });
 
   const featuredGallery = settings.find(s => s.id === 'featured_gallery') || { title: 'Galeri Kegiatan', imageUrls: [] };
@@ -140,7 +142,8 @@ export default function Dashboard() {
           social_link: currentSettings.social_link || '',
           image_link: currentSettings.image_link || '',
           join_link: currentSettings.join_link || '',
-          support_link: currentSettings.support_link || ''
+          support_link: currentSettings.support_link || '',
+          custom_links: currentSettings.custom_links || []
         });
         setIsContactInitialized(true);
       }
@@ -374,6 +377,32 @@ export default function Dashboard() {
     }
   };
 
+  const formatDate = (dateValue: any) => {
+    if (!dateValue) return '';
+    try {
+      let date: Date;
+      if (dateValue?.toDate) {
+        date = dateValue.toDate();
+      } else if (typeof dateValue === 'string') {
+        date = new Date(dateValue);
+      } else if (dateValue instanceof Date) {
+        date = dateValue;
+      } else {
+        date = new Date(dateValue);
+      }
+      
+      if (isNaN(date.getTime())) return 'Format Salah';
+      
+      return date.toLocaleDateString('id-ID', { 
+        day: 'numeric', 
+        month: 'short', 
+        year: 'numeric' 
+      });
+    } catch (e) {
+      return 'Format Salah';
+    }
+  };
+
   const renderManagementSection = (title: string, data: any[], fields: { key: string, label: string }[]) => (
     <div className="bg-white rounded-[1.5rem] lg:rounded-[2.5rem] shadow-sm border border-slate-100 overflow-hidden">
       <div className="p-5 lg:p-8 border-b border-slate-100 flex flex-col sm:flex-row gap-4 sm:justify-between sm:items-center bg-white">
@@ -408,6 +437,8 @@ export default function Dashboard() {
                       <div className="w-10 h-10 lg:w-14 lg:h-14 rounded-xl overflow-hidden border border-slate-100 shadow-sm group-hover:shadow-md transition-shadow">
                         <img src={item[f.key]} className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500" alt="" referrerPolicy="no-referrer" />
                       </div>
+                    ) : f.key === 'createdAt' || f.key === 'timestamp' || f.key === 'uploadedAt' ? (
+                      formatDate(item[f.key])
                     ) : (
                       item[f.key]?.toString() || <span className="text-slate-300 italic">kosong</span>
                     )}
@@ -418,7 +449,7 @@ export default function Dashboard() {
                     {(activeSection === 'articles' || activeSection === 'pages') && (
                       <>
                         <a 
-                          href={activeSection === 'articles' ? `/article/${item.id}` : `/page/${item.slug}`}
+                          href={activeSection === 'articles' ? `/article/${item.slug || item.id}` : `/page/${item.slug}`}
                           target="_blank"
                           rel="noopener noreferrer"
                           className="p-2.5 text-slate-400 hover:text-sky-500 transition-all hover:bg-sky-50 rounded-xl border border-transparent hover:border-sky-100"
@@ -429,7 +460,7 @@ export default function Dashboard() {
                         <button 
                           onClick={() => {
                             const baseUrl = window.location.origin;
-                            const path = activeSection === 'articles' ? `/article/${item.id}` : `/page/${item.slug}`;
+                            const path = activeSection === 'articles' ? `/article/${item.slug || item.id}` : `/page/${item.slug}`;
                             navigator.clipboard.writeText(baseUrl + path);
                             alert('URL berhasil disalin!');
                           }} 
@@ -733,7 +764,7 @@ export default function Dashboard() {
                                 <div className="text-[10px] lg:text-xs text-slate-500">{program?.category}</div>
                               </td>
                               <td className="px-6 lg:px-8 py-5 text-slate-600 text-xs lg:text-sm whitespace-nowrap">
-                                {new Date(donation.timestamp).toLocaleDateString('id-ID', { day: 'numeric', month: 'long', year: 'numeric' })}
+                                {formatDate(donation.timestamp)}
                               </td>
                               <td className="px-6 lg:px-8 py-5 font-bold text-slate-900 text-sm lg:text-base whitespace-nowrap">
                                 Rp {donation.amount.toLocaleString()}
@@ -783,7 +814,7 @@ export default function Dashboard() {
                         {donations.length > 0 ? donations.map((donation) => (
                           <tr key={donation.id} className="hover:bg-slate-50/50 transition-colors">
                             <td className="px-6 lg:px-8 py-4 text-xs lg:text-sm text-slate-600 whitespace-nowrap">
-                              {new Date(donation.timestamp).toLocaleDateString('id-ID', { day: 'numeric', month: 'short', year: 'numeric' })}
+                              {formatDate(donation.timestamp)}
                             </td>
                             <td className="px-6 lg:px-8 py-4 whitespace-nowrap">
                               <div className="text-xs lg:text-sm font-bold text-slate-900">{donation.donorName}</div>
@@ -987,7 +1018,7 @@ export default function Dashboard() {
                 )}
 
                 <div className="grid grid-cols-2 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-4 gap-4 lg:gap-6">
-                  {gallery.length > 0 ? gallery.map((item) => {
+                  {gallery.length > 0 ? gallery.slice(0, visibleGalleryCount).map((item) => {
                     const isFeatured = featuredGallery.imageUrls?.includes(item.imageUrl);
                     return (
                       <motion.div 
@@ -1075,6 +1106,17 @@ export default function Dashboard() {
                     </div>
                   )}
                 </div>
+
+                {gallery.length > visibleGalleryCount && (
+                  <div className="flex justify-center mt-12 mb-8">
+                    <button 
+                      onClick={() => setVisibleGalleryCount(prev => prev + 16)}
+                      className="bg-white border-2 border-slate-100 px-10 py-4 rounded-2xl font-black text-slate-400 hover:text-primary hover:border-primary/20 hover:bg-primary/5 transition-all shadow-sm hover:shadow-lg active:scale-95 uppercase tracking-widest text-xs"
+                    >
+                      Load More Images
+                    </button>
+                  </div>
+                )}
               </div>
             )}
 
@@ -1283,6 +1325,76 @@ export default function Dashboard() {
                           placeholder="https://..."
                           className="w-full bg-slate-50 border border-slate-200 rounded-xl lg:rounded-2xl px-4 lg:px-6 py-3 lg:py-4 font-medium text-slate-900 focus:ring-2 focus:ring-primary outline-none transition-all text-sm"
                         />
+                      </div>
+                    </div>
+
+                    <div className="pt-8 border-t border-slate-100">
+                      <div className="flex items-center justify-between mb-6">
+                        <div>
+                          <h4 className="text-sm font-black text-slate-900 uppercase tracking-widest">Custom Links</h4>
+                          <p className="text-[10px] text-slate-400 mt-1">Tambahkan tautan khusus lainnya sesuai kebutuhan.</p>
+                        </div>
+                        <button 
+                          onClick={() => {
+                            setCustomContactForm({
+                              ...customContactForm,
+                              custom_links: [...(customContactForm.custom_links || []), { title: '', url: '' }]
+                            });
+                          }}
+                          className="flex items-center gap-2 text-primary font-bold text-xs hover:underline decoration-2 underline-offset-4"
+                        >
+                          <Plus className="w-3 h-3" /> Add Link
+                        </button>
+                      </div>
+
+                      <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                        {customContactForm.custom_links && customContactForm.custom_links.length > 0 ? (
+                          customContactForm.custom_links.map((link, idx) => (
+                            <div key={idx} className="flex flex-col gap-3 bg-slate-50/50 p-4 rounded-2xl border border-slate-100 relative group">
+                              <button 
+                                onClick={() => {
+                                  const newLinks = customContactForm.custom_links.filter((_, i) => i !== idx);
+                                  setCustomContactForm({ ...customContactForm, custom_links: newLinks });
+                                }}
+                                className="absolute top-2 right-2 p-1.5 text-slate-300 hover:text-red-500 hover:bg-red-50 rounded-lg transition-all opacity-0 group-hover:opacity-100"
+                              >
+                                <X className="w-3 h-3" />
+                              </button>
+                              <div className="space-y-1">
+                                <label className="text-[10px] font-bold text-slate-400 uppercase tracking-wider ml-1">Nama Link</label>
+                                <input 
+                                  type="text"
+                                  value={link.title}
+                                  onChange={(e) => {
+                                    const newLinks = [...customContactForm.custom_links];
+                                    newLinks[idx].title = e.target.value;
+                                    setCustomContactForm({ ...customContactForm, custom_links: newLinks });
+                                  }}
+                                  placeholder="Misal: Katalog Buku"
+                                  className="w-full bg-white border border-slate-200 rounded-xl px-3 py-2 text-sm font-bold focus:ring-2 focus:ring-primary outline-none"
+                                />
+                              </div>
+                              <div className="space-y-1">
+                                <label className="text-[10px] font-bold text-slate-400 uppercase tracking-wider ml-1">URL / Tautan</label>
+                                <input 
+                                  type="text"
+                                  value={link.url}
+                                  onChange={(e) => {
+                                    const newLinks = [...customContactForm.custom_links];
+                                    newLinks[idx].url = e.target.value;
+                                    setCustomContactForm({ ...customContactForm, custom_links: newLinks });
+                                  }}
+                                  placeholder="https://..."
+                                  className="w-full bg-white border border-slate-200 rounded-xl px-3 py-2 text-sm focus:ring-2 focus:ring-primary outline-none"
+                                />
+                              </div>
+                            </div>
+                          ))
+                        ) : (
+                          <div className="col-span-full text-center py-8 border-2 border-dashed border-slate-100 rounded-3xl">
+                            <p className="text-slate-400 text-xs font-medium">Belum ada custom link ditambahkan.</p>
+                          </div>
+                        )}
                       </div>
                     </div>
 
