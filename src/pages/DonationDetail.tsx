@@ -118,14 +118,6 @@ export default function DonationDetail() {
     formRef.current?.scrollIntoView({ behavior: 'smooth', block: 'start' });
   };
 
-  if (!campaign && id) {
-    return (
-      <div className="min-h-screen flex items-center justify-center bg-white">
-        <div className="animate-spin rounded-full h-10 w-10 border-t-2 border-primary"></div>
-      </div>
-    );
-  }
-
   // Fallback for general donation if no ID
   const displayTitle = campaign?.title || `Sedekah Jariyah ${siteSettings.site_name || 'Mushaff Indonesia'}`;
   const displayImage = campaign?.image || 'https://picsum.photos/seed/mushaff/800/600';
@@ -133,6 +125,40 @@ export default function DonationDetail() {
   const target = campaign?.targetAmount || 100000000;
   const current = campaign?.currentAmount || 0;
   const progress = Math.min(Math.round((current / target) * 100), 100);
+
+  const handleShare = async () => {
+    const shareData = {
+      title: displayTitle,
+      text: `Mari bantu program "${displayTitle}" melalui ${siteSettings.site_name || 'Mushaff Indonesia'}.`,
+      url: window.location.href,
+    };
+
+    if (navigator.share && navigator.canShare && navigator.canShare(shareData)) {
+      try {
+        await navigator.share(shareData);
+      } catch (err) {
+        if ((err as Error).name !== 'AbortError') {
+          console.error('Error sharing:', err);
+        }
+      }
+    } else {
+      // Fallback: Copy to clipboard
+      try {
+        await navigator.clipboard.writeText(window.location.href);
+        alert('Link telah disalin ke clipboard!');
+      } catch (err) {
+        console.error('Failed to copy:', err);
+      }
+    }
+  };
+
+  if (!campaign && id) {
+    return (
+      <div className="min-h-screen flex items-center justify-center bg-white">
+        <div className="animate-spin rounded-full h-10 w-10 border-t-2 border-primary"></div>
+      </div>
+    );
+  }
 
   return (
     <div className="min-h-screen bg-slate-50 pb-32">
@@ -143,7 +169,7 @@ export default function DonationDetail() {
             <ArrowLeft className="w-6 h-6" />
           </button>
           <span className="font-bold text-slate-900 truncate max-w-[200px]">Detail Donasi</span>
-          <button className="p-2 -mr-2 text-slate-600">
+          <button onClick={handleShare} className="p-2 -mr-2 text-slate-600 hover:text-primary transition-colors">
             <Share2 className="w-5 h-5" />
           </button>
         </div>

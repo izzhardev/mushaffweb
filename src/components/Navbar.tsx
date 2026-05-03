@@ -34,23 +34,23 @@ export default function Navbar() {
   return (
     <nav className="sticky top-0 z-50 bg-white/80 backdrop-blur-md border-b border-slate-200">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div className="flex justify-between h-20">
+        <div className="flex justify-between h-16 sm:h-20">
           <div className="flex items-center">
-            <Link to="/" className="flex items-center gap-3">
+            <Link to="/" className="flex items-center gap-2 sm:gap-3">
               <img 
                 src={siteSettings.site_logo || "logo.png"} 
                 alt={siteSettings.site_name} 
-                className="w-12 h-12 object-contain"
+                className="w-10 h-10 sm:w-12 sm:h-12 object-contain"
                 referrerPolicy="no-referrer"
                 onError={(e) => {
                   (e.target as HTMLImageElement).src = "https://picsum.photos/seed/mushaff-logo/100/100";
                 }}
               />
-              <div className="hidden md:flex flex-col">
-                <span className="text-xl font-bold text-primary tracking-tight leading-none">
+              <div className="hidden sm:flex flex-col">
+                <span className="text-lg sm:text-xl font-black text-primary tracking-tight leading-none uppercase">
                   {firstName}<span className="text-slate-900">{lastName}</span>
                 </span>
-                <span className="text-[10px] font-bold text-accent uppercase tracking-[0.2em]">{siteSettings.site_description || "Platform Pemberdayaan Umat"}</span>
+                <span className="text-[8px] sm:text-[10px] font-black text-accent uppercase tracking-[0.2em]">{siteSettings.site_description || "Platform Pemberdayaan Umat"}</span>
               </div>
             </Link>
           </div>
@@ -130,14 +130,14 @@ export default function Navbar() {
             exit={{ opacity: 0, height: 0 }}
             className="md:hidden bg-white border-b border-slate-200 overflow-hidden"
           >
-            <div className="px-4 pt-2 pb-6 space-y-1">
+            <div className="px-4 py-6 space-y-1">
               {navLinks.map((link) => (
                 link.href.startsWith('#') ? (
                   <a
                     key={link.name}
                     href={link.href}
                     onClick={() => setIsOpen(false)}
-                    className="block px-3 py-4 text-base font-medium text-slate-600 hover:text-primary hover:bg-slate-50 rounded-lg"
+                    className="block px-4 py-3 text-sm font-black text-slate-600 hover:text-primary hover:bg-slate-50 rounded-xl uppercase tracking-widest transition-all"
                   >
                     {link.name}
                   </a>
@@ -146,7 +146,7 @@ export default function Navbar() {
                     key={link.name}
                     to={link.href}
                     onClick={() => setIsOpen(false)}
-                    className="block px-3 py-4 text-base font-medium text-slate-600 hover:text-primary hover:bg-slate-50 rounded-lg"
+                    className="block px-4 py-3 text-sm font-black text-slate-600 hover:text-primary hover:bg-slate-50 rounded-xl uppercase tracking-widest transition-all"
                   >
                     {link.name}
                   </Link>
@@ -157,14 +157,14 @@ export default function Navbar() {
                   <Link
                     to="/profile"
                     onClick={() => setIsOpen(false)}
-                    className="block px-3 py-4 text-base font-medium text-slate-600 hover:text-primary hover:bg-slate-50 rounded-lg"
+                    className="block px-4 py-3 text-sm font-black text-slate-600 hover:text-primary hover:bg-slate-50 rounded-xl uppercase tracking-widest transition-all"
                   >
                     Profil Saya
                   </Link>
                   <Link
                     to="/dashboard"
                     onClick={() => setIsOpen(false)}
-                    className="block px-3 py-4 text-base font-medium text-slate-600 hover:text-primary hover:bg-slate-50 rounded-lg"
+                    className="block px-4 py-3 text-sm font-black text-slate-600 hover:text-primary hover:bg-slate-50 rounded-xl uppercase tracking-widest transition-all"
                   >
                     Dashboard
                   </Link>
@@ -173,9 +173,9 @@ export default function Navbar() {
               <Link
                 to="/donate"
                 onClick={() => setIsOpen(false)}
-                className="flex items-center justify-center gap-2 bg-primary text-white px-6 py-4 rounded-xl text-base font-semibold mt-4"
+                className="flex items-center justify-center gap-2 bg-primary text-white px-6 py-3.5 rounded-xl text-xs font-black uppercase tracking-widest mt-4 shadow-lg shadow-primary/20"
               >
-                <Heart className="w-5 h-5 fill-current" />
+                <Heart className="w-4 h-4 fill-current" />
                 Bantu Sekarang
               </Link>
             </div>

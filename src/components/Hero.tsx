@@ -67,7 +67,7 @@ export default function Hero() {
   if (!currentItem) return null;
 
   return (
-    <section className="relative h-[600px] lg:h-[800px] w-full overflow-hidden bg-slate-900">
+    <section className="relative h-[50vh] sm:h-[60vh] lg:h-[800px] w-full overflow-hidden bg-slate-900">
       <AnimatePresence mode="wait">
         <motion.div
           key={safeCurrentSlide}
@@ -97,33 +97,33 @@ export default function Hero() {
             transition={{ duration: 0.6, delay: 0.2 }}
             className="max-w-2xl"
           >
-            <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-primary text-white text-xs font-bold mb-6 uppercase tracking-widest">
+            <div className="inline-flex items-center gap-2 px-3 py-1 sm:px-4 sm:py-2 rounded-full bg-primary text-white text-[10px] sm:text-xs font-bold mb-4 sm:mb-6 uppercase tracking-widest">
               {currentItem.accent}
             </div>
             
-            <h1 className="text-4xl lg:text-7xl font-bold text-white leading-tight mb-6">
+            <h1 className="text-xl sm:text-4xl lg:text-7xl font-bold text-white leading-tight mb-4 sm:mb-6">
               {currentItem.title}
             </h1>
             
-            <p className="text-lg lg:text-xl text-white/80 mb-10 leading-relaxed">
+            <p className="text-xs sm:text-lg lg:text-xl text-white/80 mb-6 sm:mb-10 leading-relaxed line-clamp-2 sm:line-clamp-none">
               {currentItem.subtitle}
             </p>
 
-            <div className="flex flex-col sm:flex-row gap-4">
+            <div className="flex flex-col sm:flex-row gap-2 sm:gap-4">
               <Link
                 to={currentItem.targetLink || '/donate'}
-                className="inline-flex items-center justify-center gap-2 bg-primary text-white px-8 py-4 rounded-full text-lg font-bold hover:bg-primary/90 transition-all shadow-xl shadow-primary/20 group"
+                className="inline-flex items-center justify-center gap-2 bg-primary text-white px-5 py-2.5 sm:px-8 sm:py-4 rounded-full text-xs sm:text-lg font-bold hover:bg-primary/90 transition-all shadow-xl shadow-primary/20 group w-full sm:w-auto"
               >
                 {currentItem.cta || 'Bantu Sekarang'}
-                <Heart className="w-5 h-5 group-hover:scale-110 transition-transform" />
+                <Heart className="w-4 h-4 sm:w-5 sm:h-5 group-hover:scale-110 transition-transform" />
               </Link>
               {currentItem.detailLink && (
                 <Link
                   to={currentItem.detailLink}
-                  className="inline-flex items-center justify-center gap-2 bg-white/10 backdrop-blur-md text-white border border-white/20 px-8 py-4 rounded-full text-lg font-bold hover:bg-white/20 transition-all group"
+                  className="inline-flex items-center justify-center gap-2 bg-white/10 backdrop-blur-md text-white border border-white/20 px-5 py-2.5 sm:px-8 sm:py-4 rounded-full text-xs sm:text-lg font-bold hover:bg-white/20 transition-all group w-full sm:w-auto"
                 >
                   Lihat Detail
-                  <ArrowRight className="w-5 h-5 group-hover:translate-x-1 transition-transform" />
+                  <ArrowRight className="w-4 h-4 sm:w-5 sm:h-5 group-hover:translate-x-1 transition-transform" />
                 </Link>
               )}
             </div>

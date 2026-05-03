@@ -12,7 +12,7 @@ export default function VisionMission() {
   ];
 
   return (
-    <section className="py-24 bg-gradient-to-br from-primary to-accent text-white overflow-hidden relative">
+    <section className="py-10 sm:py-24 bg-gradient-to-br from-primary to-accent text-white overflow-hidden relative">
       {/* Decorative Islamic Pattern */}
       <div className="absolute inset-0 opacity-5 pointer-events-none">
         <svg width="100%" height="100%" viewBox="0 0 100 100" preserveAspectRatio="none">
@@ -24,12 +24,12 @@ export default function VisionMission() {
       </div>
 
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
-        <div className="text-center mb-20">
+        <div className="text-center mb-10 sm:mb-20">
           <motion.h2 
             initial={{ opacity: 0, y: 20 }}
             whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true }}
-            className="text-3xl lg:text-4xl font-bold mb-12"
+            className="text-xl sm:text-3xl lg:text-4xl font-black mb-10 sm:mb-12 uppercase tracking-widest"
           >
             Visi & Misi
           </motion.h2>
@@ -38,16 +38,16 @@ export default function VisionMission() {
             initial={{ opacity: 0, scale: 0.95 }}
             whileInView={{ opacity: 1, scale: 1 }}
             viewport={{ once: true }}
-            className="mb-20"
+            className="mb-12 sm:mb-20 px-4"
           >
-            <p className="text-sm uppercase tracking-[0.3em] font-bold text-white/60 mb-4">Visi Kami</p>
-            <h3 className="text-4xl lg:text-6xl font-bold leading-tight max-w-4xl mx-auto">
+            <p className="text-[10px] sm:text-sm uppercase tracking-[0.3em] font-bold text-white/60 mb-3 sm:mb-4">Visi Kami</p>
+            <h3 className="text-xl sm:text-4xl lg:text-6xl font-black leading-tight max-w-4xl mx-auto drop-shadow-xl">
               "Membumikan nilai-nilai Al-Qur’an bagi pemuda muslim di Indonesia"
             </h3>
           </motion.div>
         </div>
 
-        <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-8">
           {missions.map((mission, index) => (
             <motion.div
               key={index}
@@ -55,12 +55,12 @@ export default function VisionMission() {
               whileInView={{ opacity: 1, y: 0 }}
               viewport={{ once: true }}
               transition={{ delay: index * 0.1 }}
-              className="bg-white/10 backdrop-blur-sm p-8 rounded-[2rem] border border-white/10 hover:bg-white/20 transition-all group"
+              className="bg-white/10 backdrop-blur-sm p-5 sm:p-8 rounded-[2rem] border border-white/10 hover:bg-white/20 transition-all group"
             >
-              <div className="w-12 h-12 bg-white/20 rounded-xl flex items-center justify-center mb-6 group-hover:scale-110 transition-transform">
-                <mission.icon className="w-6 h-6" />
+              <div className="w-10 h-10 sm:w-12 sm:h-12 bg-white/20 rounded-xl flex items-center justify-center mb-4 sm:mb-6 group-hover:scale-110 transition-transform">
+                <mission.icon className="w-5 h-5 sm:w-6 sm:h-6" />
               </div>
-              <p className="text-lg font-medium leading-relaxed">
+              <p className="text-sm sm:text-lg font-bold leading-relaxed">
                 {mission.text}
               </p>
             </motion.div>

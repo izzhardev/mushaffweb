@@ -36,22 +36,22 @@ export default function LatestActivities() {
   })) : defaultActivities;
 
   return (
-    <section className="py-24 bg-slate-50 overflow-hidden">
+    <section className="py-10 sm:py-24 bg-slate-50 overflow-hidden">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div className="flex flex-col md:flex-row justify-between items-end mb-12 gap-6">
+        <div className="flex flex-col sm:flex-row justify-between items-start sm:items-end mb-8 sm:mb-12 gap-4 sm:gap-6">
           <div>
             <motion.div
               initial={{ opacity: 0, x: -20 }}
               whileInView={{ opacity: 1, x: 0 }}
               viewport={{ once: true }}
-              className="inline-block px-4 py-1.5 rounded-full bg-primary/10 text-primary text-sm font-bold mb-4"
+              className="inline-block px-4 py-1 rounded-full bg-primary/10 text-primary text-[10px] sm:text-sm font-bold mb-3 sm:mb-4 uppercase tracking-wider"
             >
               Update Kabar
             </motion.div>
-            <h2 className="text-4xl font-bold text-slate-900">Kabar Mushaff</h2>
+            <h2 className="text-2xl sm:text-4xl font-black text-slate-900 leading-tight">Kabar Mushaff</h2>
           </div>
-          <button className="text-primary font-bold flex items-center gap-2 hover:gap-3 transition-all group">
-            Lihat Semua Kabar <ArrowRight className="w-5 h-5" />
+          <button className="text-primary font-black text-xs sm:text-base flex items-center gap-2 hover:gap-3 transition-all group uppercase tracking-widest">
+            Semua Kabar <ArrowRight className="w-4 h-4 sm:w-5 sm:h-5" />
           </button>
         </div>
 
@@ -61,18 +61,18 @@ export default function LatestActivities() {
             initial={{ opacity: 0, y: 30 }}
             whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true }}
-            className="lg:col-span-5 bg-gradient-to-br from-primary to-accent rounded-[3rem] p-8 lg:p-12 text-white relative overflow-hidden group"
+            className="lg:col-span-5 bg-gradient-to-br from-primary to-accent rounded-[2rem] sm:rounded-[3rem] p-6 sm:p-8 lg:p-12 text-white relative overflow-hidden group"
           >
             <div className="absolute top-0 right-0 w-64 h-64 bg-white/10 rounded-full -translate-y-1/2 translate-x-1/2 blur-3xl group-hover:scale-110 transition-transform duration-700" />
             
             <div className="relative z-10 h-full flex flex-col">
-              <div className="w-16 h-16 bg-white/20 backdrop-blur-md rounded-2xl flex items-center justify-center mb-8">
-                <Smartphone className="w-8 h-8" />
+              <div className="w-12 h-12 sm:w-16 sm:h-16 bg-white/20 backdrop-blur-md rounded-xl sm:rounded-2xl flex items-center justify-center mb-6 sm:mb-8">
+                <Smartphone className="w-6 h-6 sm:w-8 sm:h-8" />
               </div>
               
-              <h3 className="text-3xl font-bold mb-4">{siteSettings.site_name.split(' ')[0] || 'Mushaff'} App</h3>
-              <p className="text-white/80 mb-8 text-lg leading-relaxed">
-                Belajar bersama kami kini lebih mudah dalam genggaman. Download aplikasi {siteSettings.site_name.split(' ')[0] || 'Mushaff'} untuk akses materi pembelajaran interaktif kapan saja.
+              <h3 className="text-xl sm:text-3xl font-black mb-3 sm:mb-4">{siteSettings.site_name.split(' ')[0] || 'Mushaff'} App</h3>
+              <p className="text-white/80 mb-6 sm:mb-8 text-xs sm:text-lg leading-relaxed">
+                Belajar bersama kami kini lebih mudah dalam genggaman. Download aplikasi {siteSettings.site_name.split(' ')[0] || 'Mushaff'} untuk akses materi pembelajaran interaktif.
               </p>
               
               <div className="mt-auto">
@@ -80,18 +80,18 @@ export default function LatestActivities() {
                   href="https://play.google.com/store/apps/details?id=com.izzhartech.mirc&hl=id"
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="inline-flex items-center gap-3 bg-white text-primary px-8 py-4 rounded-full font-bold hover:bg-slate-50 transition-all shadow-xl shadow-black/10 group/btn"
+                  className="inline-flex items-center gap-2 sm:gap-3 bg-white text-primary px-5 py-2.5 sm:px-8 sm:py-4 rounded-full text-xs sm:text-base font-black hover:bg-slate-50 transition-all shadow-xl shadow-black/10 group/btn uppercase tracking-widest"
                 >
-                  <Download className="w-5 h-5 group-hover/btn:bounce" />
-                  Download di Playstore
+                  <Download className="w-4 h-4 sm:w-5 sm:h-5 group-hover/btn:bounce" />
+                  Download Playstore
                 </a>
               </div>
 
-              <div className="mt-12 relative">
+              <div className="mt-8 sm:mt-12 relative">
                 <img 
                   src="https://res.cloudinary.com/dgezrzjnb/image/upload/v1777128227/ykt9iva8qotxeqeyoneh.jpg" 
                   alt="App Mushaff Edu" 
-                  className="w-48 mx-auto rounded-3xl shadow-2xl rotate-6 group-hover:rotate-0 transition-transform duration-500"
+                  className="w-32 sm:w-48 mx-auto rounded-3xl shadow-2xl rotate-6 group-hover:rotate-0 transition-transform duration-500"
                   referrerPolicy="no-referrer"
                 />
               </div>
@@ -109,32 +109,32 @@ export default function LatestActivities() {
                 transition={{ delay: i * 0.1 }}
                 className={`group bg-white rounded-[2.5rem] overflow-hidden border border-slate-100 hover:shadow-2xl transition-all duration-500 ${i === 0 ? 'sm:col-span-2 flex flex-col md:flex-row' : ''}`}
               >
-                <div className={`relative overflow-hidden ${i === 0 ? 'md:w-1/2 h-64 md:h-auto' : 'h-48'}`}>
+                <div className={`relative overflow-hidden ${i === 0 ? 'md:w-1/2 h-44 sm:h-64 md:h-auto' : 'h-36 sm:h-48'}`}>
                   <img 
                     src={act.image} 
                     alt={act.title} 
                     className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-700"
                     referrerPolicy="no-referrer"
                   />
-                  <div className="absolute top-4 left-4">
-                    <div className="w-10 h-10 bg-white/90 backdrop-blur-sm rounded-xl flex items-center justify-center text-primary shadow-lg">
-                      <act.icon className="w-5 h-5" />
+                  <div className="absolute top-2 left-2 sm:top-4 sm:left-4">
+                    <div className="w-8 h-8 sm:w-10 sm:h-10 bg-white/90 backdrop-blur-sm rounded-lg sm:rounded-xl flex items-center justify-center text-primary shadow-lg border border-white/50">
+                      <act.icon className="w-4 h-4 sm:w-5 sm:h-5" />
                     </div>
                   </div>
                 </div>
                 
-                <div className={`p-8 ${i === 0 ? 'md:w-1/2 flex flex-col justify-center' : ''}`}>
-                  <h4 className="text-xl font-bold text-slate-900 mb-3 group-hover:text-primary transition-colors">
+                <div className={`p-4 sm:p-8 ${i === 0 ? 'md:w-1/2 flex flex-col justify-center' : ''}`}>
+                  <h4 className="text-base sm:text-xl font-black text-slate-900 mb-2 sm:mb-3 group-hover:text-primary transition-colors leading-tight">
                     {act.title}
                   </h4>
-                  <p className="text-slate-600 text-sm leading-relaxed mb-6">
+                  <p className="text-slate-600 text-[10px] sm:text-sm leading-relaxed mb-4 sm:mb-6 line-clamp-2 sm:line-clamp-none">
                     {act.desc}
                   </p>
                   <a 
                     href={act.link || '#'} 
-                    className="text-primary text-sm font-bold flex items-center gap-2 hover:gap-3 transition-all"
+                    className="text-primary text-[10px] sm:text-sm font-black flex items-center gap-1.5 sm:gap-2 hover:gap-3 transition-all uppercase tracking-widest"
                   >
-                    Selengkapnya <ArrowRight className="w-4 h-4" />
+                    Selengkapnya <ArrowRight className="w-3 h-3 sm:w-4 h-4" />
                   </a>
                 </div>
               </motion.div>
