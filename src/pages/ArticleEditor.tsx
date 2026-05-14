@@ -142,9 +142,16 @@ export default function ArticleEditor() {
     }
 
     setIsSaving(true);
+
+    const cleanedContent = content
+  .replace(/&nbsp;/g, ' ')
+  .replace(/\u00A0/g, ' ')
+  .replace(/<p><\/p>/g, '')
+  .replace(/\s+/g, ' ');
+
     const commonData = {
       title,
-      content,
+      content: cleanedContent,
       image,
       slug: slug || title.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/(^-|-$)+/g, ''),
     };
@@ -282,13 +289,25 @@ export default function ArticleEditor() {
                         <ReactQuill
                           theme="snow"
                           value={content}
-                          onChange={setContent}
+                          onChange={(value) => {
+                            const cleaned = value
+                              .replace(/&nbsp;/g, ' ')
+                              .replace(/\u00A0/g, ' ')
+                              .replace(/<p><\/p>/g, '')
+                              .replace(/\s+/g, ' ')
+                              .trim();
+
+                            setContent(cleaned);
+                          }}
                           className="flex-grow flex flex-col"
                           modules={{
+                            clipboard: {
+                              matchVisual: false,
+                            },
                             toolbar: [
-                              [{ 'header': [1, 2, 3, false] }],
+                              [{ header: [1, 2, 3, false] }],
                               ['bold', 'italic', 'underline', 'strike'],
-                              [{ 'list': 'ordered' }, { 'list': 'bullet' }],
+                              [{ list: 'ordered' }, { list: 'bullet' }],
                               ['link', 'image', 'video'],
                               ['clean']
                             ],
@@ -340,9 +359,26 @@ export default function ArticleEditor() {
                       </div>
                     </div>
                     
-                    <div className="prose prose-slate prose-lg max-w-none">
-                      <div dangerouslySetInnerHTML={{ __html: content }} />
-                    </div>
+                    <div
+                        className="
+                          prose 
+                          prose-slate 
+                          prose-lg 
+                          max-w-none
+
+                          prose-p:break-normal
+                          prose-p:whitespace-normal
+                          prose-p:leading-relaxed
+
+                          prose-headings:break-normal
+                          prose-li:break-normal
+
+                          break-words
+                          overflow-hidden
+                        "
+                      >
+                        <div dangerouslySetInnerHTML={{ __html: content }} />
+                      </div>
                   </div>
                 </motion.div>
               )}

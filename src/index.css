@@ -26,6 +26,32 @@
   h1, h2, h3, h4, h5, h6 {
     @apply font-title;
   }
+  
+  /* Ensure proper typography word wrapping and prevent weird hyphenation */
+  .prose, .prose * {
+    word-break: normal !important;
+    overflow-wrap: break-word !important;
+    white-space: normal !important;
+    hyphens: none !important;
+  }
+
+  .prose p,
+  .prose li,
+  .prose h1,
+  .prose h2,
+  .prose h3,
+  .prose h4 {
+    word-break: normal !important;
+    overflow-wrap: break-word !important;
+    white-space: normal !important;
+    hyphens: none !important;
+  }
+
+  .ql-editor {
+    word-break: normal !important;
+    overflow-wrap: break-word !important;
+    white-space: pre-wrap !important;
+  }
 }
 
 @layer utilities {

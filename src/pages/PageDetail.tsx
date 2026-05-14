@@ -54,7 +54,7 @@ export default function PageDetail() {
               </span>
             </div>
 
-            <h1 className="text-3xl sm:text-4xl lg:text-6xl font-black text-white leading-tight max-w-4xl drop-shadow-xl">
+            <h1 className="text-3xl sm:text-4xl lg:text-6xl font-black text-white leading-tight max-w-4xl drop-shadow-xl break-words whitespace-normal [word-break:normal] [overflow-wrap:break-word] [hyphens:none]">
               {page.title}
             </h1>
           </div>
@@ -67,7 +67,7 @@ export default function PageDetail() {
       {/* MAIN CONTENT BLOCK */}
       <div className="relative z-10 -mt-12 lg:-mt-20 pb-20">
         <div className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="bg-white rounded-2xl lg:rounded-3xl shadow-lg p-6 sm:p-8 lg:p-12">
+          <div className="bg-white rounded-2xl lg:rounded-3xl shadow-lg p-4 sm:p-8 lg:p-12">
             
             <div className="flex flex-col lg:flex-row gap-8 lg:gap-16">
               
@@ -101,6 +101,7 @@ export default function PageDetail() {
                     prose-headings:text-slate-900
                     prose-p:text-slate-600 
                     prose-p:leading-relaxed
+                    prose-p:mb-5
                     prose-li:text-slate-600
                     prose-ol:list-decimal
                     prose-ul:list-disc
@@ -108,7 +109,7 @@ export default function PageDetail() {
                     prose-img:max-w-full 
                     prose-img:h-auto
                     prose-a:text-primary 
-                    break-words
+                    break-words whitespace-normal [word-break:normal] [overflow-wrap:break-word] [hyphens:none]
                   "
                   dangerouslySetInnerHTML={{ __html: page.content }}
                 />
