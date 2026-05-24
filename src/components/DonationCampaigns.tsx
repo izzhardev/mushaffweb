@@ -2,6 +2,7 @@ import { motion } from 'motion/react';
 import { Heart, Target, TrendingUp, ArrowRight } from 'lucide-react';
 import { useAppDatabase } from '../hooks/useAppDatabase';
 import { Link } from 'react-router-dom';
+import { optimizeImage } from '../lib/utils';
 
 export default function DonationCampaigns() {
   const { campaigns } = useAppDatabase();
@@ -50,7 +51,7 @@ export default function DonationCampaigns() {
               >
                 <div className="relative aspect-video sm:h-56 overflow-hidden">
                   <img 
-                    src={campaign.image || `https://picsum.photos/seed/${campaign.id}/800/600`} 
+                    src={optimizeImage(campaign.image || `https://picsum.photos/seed/${campaign.id}/800/600`, { width: 500 })} 
                     alt={campaign.title} 
                     className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-700"
                     referrerPolicy="no-referrer"

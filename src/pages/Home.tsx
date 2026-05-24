@@ -7,10 +7,15 @@ import AboutSection from '../components/AboutSection';
 import BeneficiariesSection from '../components/BeneficiariesSection';
 import ContactSection from '../components/ContactSection';
 import { motion } from 'motion/react';
+import MetaSEO from '../components/MetaSEO';
 
 export default function Home() {
   return (
     <main className="overflow-hidden">
+      <MetaSEO 
+        title="Beranda" 
+        description="Platform pemberdayaan umat yang berfokus pada pemberantasan buta huruf Al-Quran, penggalangan dana kemanusiaan, dan gerakan dakwah."
+      />
       <Hero />
       
       <DonationCampaigns />

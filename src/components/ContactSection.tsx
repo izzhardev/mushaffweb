@@ -1,6 +1,7 @@
 import { motion } from 'motion/react';
 import { Phone, Instagram, Youtube, Globe, MapPin, MessageCircle } from 'lucide-react';
 import { useAppDatabase } from '../hooks/useAppDatabase';
+import { optimizeImage } from '../lib/utils';
 
 export default function ContactSection() {
   const { settings } = useAppDatabase();
@@ -106,7 +107,7 @@ export default function ContactSection() {
           >
             {/* Placeholder for Map or Image */}
             <img 
-              src={customContact.image_link || "https://res.cloudinary.com/dgezrzjnb/image/upload/v1776780950/cycwu4porqzodhuyf9zo.png"} 
+              src={optimizeImage(customContact.image_link || "https://res.cloudinary.com/dgezrzjnb/image/upload/v1776780950/cycwu4porqzodhuyf9zo.png", { width: 600 })} 
               alt="Location" 
               className="w-full h-full object-cover" 
               style={{ objectPosition: 'right' }}

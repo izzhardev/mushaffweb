@@ -19,6 +19,7 @@ import {
 } from 'lucide-react';
 import { useAppDatabase } from '../hooks/useAppDatabase';
 import { cn } from '../lib/utils';
+import MetaSEO from '../components/MetaSEO';
 
 export default function DonationDetail() {
   const { id } = useParams();
@@ -162,6 +163,12 @@ export default function DonationDetail() {
 
   return (
     <div className="min-h-screen bg-slate-50 pb-32">
+      <MetaSEO 
+        title={displayTitle} 
+        description={displayDesc ? displayDesc.replace(/<[^>]*>/g, '').slice(0, 160) : ''} 
+        image={displayImage}
+        type="website"
+      />
       {/* Header Navigation */}
       <div className="fixed top-0 left-0 right-0 z-40 bg-white/80 backdrop-blur-md border-b border-slate-100">
         <div className="max-w-md mx-auto px-4 h-16 flex items-center justify-between">

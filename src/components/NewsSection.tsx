@@ -2,6 +2,7 @@ import { motion } from 'motion/react';
 import { ArrowRight, Calendar, User, Tag } from 'lucide-react';
 import { useAppDatabase } from '../hooks/useAppDatabase';
 import { Link } from 'react-router-dom';
+import { optimizeImage } from '../lib/utils';
 
 export default function NewsSection() {
   const { articles } = useAppDatabase();
@@ -69,7 +70,7 @@ export default function NewsSection() {
             >
               <div className="relative aspect-video sm:h-64 overflow-hidden">
                 <img 
-                  src={article.image || `https://picsum.photos/seed/${article.id}/800/600`} 
+                  src={optimizeImage(article.image || `https://picsum.photos/seed/${article.id}/800/600`, { width: 500 })} 
                   alt={article.title} 
                   className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-700"
                   referrerPolicy="no-referrer"

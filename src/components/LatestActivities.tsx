@@ -1,6 +1,7 @@
 import { motion } from 'motion/react';
 import { Smartphone, Download, BookOpen, Users, Mic2, ArrowRight } from 'lucide-react';
 import { useAppDatabase } from '../hooks/useAppDatabase';
+import { optimizeImage } from '../lib/utils';
 
 export default function LatestActivities() {
   const { settings, activities: dbActivities } = useAppDatabase();
@@ -89,7 +90,7 @@ export default function LatestActivities() {
 
               <div className="mt-8 sm:mt-12 relative">
                 <img 
-                  src="https://res.cloudinary.com/dgezrzjnb/image/upload/v1777128227/ykt9iva8qotxeqeyoneh.jpg" 
+                  src={optimizeImage("https://res.cloudinary.com/dgezrzjnb/image/upload/v1777128227/ykt9iva8qotxeqeyoneh.jpg", { width: 250 })} 
                   alt="App Mushaff Edu" 
                   className="w-32 sm:w-48 mx-auto rounded-3xl shadow-2xl rotate-6 group-hover:rotate-0 transition-transform duration-500"
                   referrerPolicy="no-referrer"
@@ -111,7 +112,7 @@ export default function LatestActivities() {
               >
                 <div className={`relative overflow-hidden ${i === 0 ? 'md:w-1/2 h-44 sm:h-64 md:h-auto' : 'h-36 sm:h-48'}`}>
                   <img 
-                    src={act.image} 
+                    src={optimizeImage(act.image, i === 0 ? { width: 800 } : { width: 400 })} 
                     alt={act.title} 
                     className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-700"
                     referrerPolicy="no-referrer"

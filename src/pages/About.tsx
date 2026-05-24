@@ -6,11 +6,16 @@ import VisionMission from '../components/VisionMission';
 import ProgramsGrid from '../components/ProgramsGrid';
 import TeamSection from '../components/TeamSection';
 import ContactSection from '../components/ContactSection';
+import MetaSEO from '../components/MetaSEO';
 
 export default function About() {
   const { settings } = useAppDatabase();
   return (
     <main className="bg-white">
+      <MetaSEO 
+        title="Tentang Kami" 
+        description="Ketahui lebih banyak mengenai visi, misi, pengurus yayasan, serta program-program dakwah Islam yang kami jalankan."
+      />
       {/* Hero Section */}
       <section className="relative py-24 bg-slate-900 overflow-hidden">
         <div className="absolute inset-0 opacity-20">

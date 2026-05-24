@@ -2,6 +2,7 @@ import { motion, AnimatePresence } from 'motion/react';
 import { useAppDatabase } from '../hooks/useAppDatabase';
 import { Maximize2, X } from 'lucide-react';
 import { useState } from 'react';
+import { optimizeImage } from '../lib/utils';
 
 export default function PhotoGallerySection() {
   const { settings } = useAppDatabase();
@@ -54,7 +55,7 @@ export default function PhotoGallerySection() {
               onClick={() => setZoomedImage(url)}
             >
               <img 
-                src={url} 
+                src={optimizeImage(url, { width: 500 })} 
                 alt="Galeri" 
                 className="w-full h-auto object-cover group-hover:scale-110 transition-transform duration-700"
                 referrerPolicy="no-referrer"
@@ -97,7 +98,7 @@ export default function PhotoGallerySection() {
               className="relative max-w-5xl w-full max-h-[90vh] flex items-center justify-center cursor-default"
             >
               <img
-                src={zoomedImage}
+                src={optimizeImage(zoomedImage, { width: 1200 })}
                 alt="Full Gallery"
                 className="max-w-full max-h-[90vh] object-contain rounded-2xl shadow-2xl ring-1 ring-white/10"
                 referrerPolicy="no-referrer"

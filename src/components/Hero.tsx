@@ -3,6 +3,7 @@ import { motion, AnimatePresence } from 'motion/react';
 import { Heart, ArrowRight, ChevronLeft, ChevronRight } from 'lucide-react';
 import { Link } from 'react-router-dom';
 import { useAppDatabase } from '../hooks/useAppDatabase';
+import { optimizeImage } from '../lib/utils';
 
 const MOCK_SLIDES = [
   {
@@ -79,7 +80,7 @@ export default function Hero() {
         >
           <div className="absolute inset-0 bg-gradient-to-r from-black/80 via-black/40 to-transparent z-10" />
           <img
-            src={currentItem.image}
+            src={optimizeImage(currentItem.image, { width: 1200 })}
             alt={currentItem.title}
             className="w-full h-full object-cover"
             referrerPolicy="no-referrer"

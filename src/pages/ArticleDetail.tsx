@@ -3,6 +3,7 @@ import { useParams, useNavigate, Link } from 'react-router-dom';
 import { motion } from 'motion/react';
 import { ArrowLeft, Calendar, User, Facebook, Twitter, Link as LinkIcon } from 'lucide-react';
 import { useAppDatabase } from '../hooks/useAppDatabase';
+import MetaSEO from '../components/MetaSEO';
 
 export default function ArticleDetail() {
   const { slug } = useParams();
@@ -45,8 +46,18 @@ export default function ArticleDetail() {
     );
   }
 
+  const plainTextDescription = article.content 
+    ? article.content.replace(/<[^>]*>/g, '').slice(0, 160) 
+    : '';
+
   return (
     <div className="bg-slate-50 min-h-screen">
+      <MetaSEO 
+        title={article.title} 
+        description={plainTextDescription} 
+        image={article.image}
+        type="article"
+      />
 
       {/* HERO */}
       <div className="relative w-full overflow-hidden">
