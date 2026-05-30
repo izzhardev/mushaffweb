@@ -80,8 +80,9 @@ Sitemap: ${baseUrl}/sitemap.xml`);
         console.log(`Fetched ${results.length} documents from ${collectionName} via Admin SDK`);
         return results;
       }
-    } catch (err) {
-      console.warn(`Admin SDK read for ${collectionName} failed or empty, trying REST API fallback:`, err);
+    } catch (err: any) {
+      const shortMsg = err?.message ? err.message.split('\n')[0] : 'Permission Denied / Unauthenticated';
+      console.log(`[Sitemap] Admin SDK read for ${collectionName} not available (${shortMsg}). Switching to REST API.`);
     }
 
     // Attempt 2: REST API Fallback
@@ -108,7 +109,7 @@ Sitemap: ${baseUrl}/sitemap.xml`);
       });
 
       if (response && response.error) {
-        console.warn(`REST API fallback for ${collectionName} returned API error:`, JSON.stringify(response.error));
+        console.log(`[Sitemap] REST fallback for ${collectionName} returned: ${response.error.message || 'Access Restricted'}`);
       }
 
       if (response && response.documents) {
@@ -146,8 +147,8 @@ Sitemap: ${baseUrl}/sitemap.xml`);
         });
         console.log(`Fetched ${results.length} documents from ${collectionName} via REST API fallback`);
       }
-    } catch (restErr) {
-      console.error(`REST API fallback for ${collectionName} failed:`, restErr);
+    } catch (restErr: any) {
+      console.log(`[Sitemap] REST API fallback for ${collectionName} failed: ${restErr?.message || restErr}`);
     }
 
     return results;
@@ -216,6 +217,21 @@ Sitemap: ${baseUrl}/sitemap.xml`);
           changefreq: 'daily',
           priority: '0.9',
           lastmod: formatLastmod(doc.data)
+        });
+      });
+
+      // Programmatic SEO regional programs sitemap
+      const pSeoSlugs = ['wakaf-quran', 'rumah-quran', 'donasi-quran', 'belajar-mengaji'];
+      const pSeoCities = ['jakarta', 'bandung', 'surabaya', 'yogyakarta', 'medan', 'makassar', 'semarang', 'palembang', 'malang', 'depok', 'tangerang', 'bekasi', 'bogor', 'solo', 'denpasar'];
+      
+      pSeoSlugs.forEach(pSlug => {
+        pSeoCities.forEach(cSlug => {
+          sitemapEntries.push({
+            loc: `${baseUrl}/program/${pSlug}/${cSlug}`,
+            changefreq: 'weekly',
+            priority: '0.8',
+            lastmod: new Date().toISOString().split('T')[0]
+          });
         });
       });
 

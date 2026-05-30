@@ -161,13 +161,41 @@ export default function DonationDetail() {
     );
   }
 
+  const donationFaqs = [
+    {
+      q: `Apakah penyaluran dana program "${displayTitle}" terdokumentasi?`,
+      a: `Tentu saja, Yayasan Mushaff Indonesia mendokumentasikan setiap penyaluran program sosial secara transparan berupa foto/video penyerahan mushaf serta merilis laporan keuangan rutin.`
+    },
+    {
+      q: 'Bagaimana status hukum donasi di Yayasan Mushaff Indonesia?',
+      a: 'Kami adalah yayasan nirlaba resmi terdaftar di Kementerian Hukum dan HAM RI (Kemenkumham). Seluruh transaksi dikelola secara amanah, akuntabel, dan sesuai syariat Islam.'
+    }
+  ];
+
+  const donationBreadcrumbs = [
+    { name: 'Beranda', path: '/' },
+    { name: 'Donasi & Wakaf', path: '/donate' },
+    { name: displayTitle, path: `/donate/${id || 'umum'}` }
+  ];
+
   return (
-    <div className="min-h-screen bg-slate-50 pb-32">
+    <div id="donation_detail_page_wrapper" className="min-h-screen bg-slate-50 pb-32">
       <MetaSEO 
         title={displayTitle} 
         description={displayDesc ? displayDesc.replace(/<[^>]*>/g, '').slice(0, 160) : ''} 
         image={displayImage}
         type="website"
+        schemaTypes={['DonateAction', 'Breadcrumb', 'FAQ']}
+        donateMeta={{
+          campaignName: displayTitle,
+          targetAmount: target,
+          currentAmount: current,
+          currency: 'IDR',
+          donateUrl: window.location.href
+        }}
+        breadcrumbList={donationBreadcrumbs}
+        faqList={donationFaqs}
+        keywords={[`sedekah ${displayTitle}`, `wakaf quran ${displayTitle}`, 'donasi mushaff indonesia', 'amal jariyah alquran']}
       />
       {/* Header Navigation */}
       <div className="fixed top-0 left-0 right-0 z-40 bg-white/80 backdrop-blur-md border-b border-slate-100">

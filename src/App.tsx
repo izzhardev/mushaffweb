@@ -21,6 +21,7 @@ import ArticleEditor from './pages/ArticleEditor';
 import CampaignEditor from './pages/CampaignEditor';
 import ArticleDetail from './pages/ArticleDetail';
 import PageDetail from './pages/PageDetail';
+import ProgramCityLanding from './pages/ProgramCityLanding';
 import Profile from './pages/Profile';
 import { AuthProvider, useAuth } from './hooks/useAuth';
 import { useLocation } from 'react-router-dom';
@@ -64,6 +65,7 @@ function AppContent() {
           <Route path="/donation-confirmation/:id" element={<DonationConfirmation />} />
           <Route path="/article/:slug" element={<ArticleDetail />} />
           <Route path="/page/:slug" element={<PageDetail />} />
+          <Route path="/program/:programSlug/:citySlug" element={<ProgramCityLanding />} />
           <Route path="/login" element={<Login />} />
           <Route path="/editor" element={<ArticleEditor />} />
           <Route path="/editor/:id" element={<ArticleEditor />} />

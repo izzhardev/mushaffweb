@@ -50,13 +50,38 @@ export default function ArticleDetail() {
     ? article.content.replace(/<[^>]*>/g, '').slice(0, 160) 
     : '';
 
+  const articleFaqs = [
+    {
+      q: `Bagaimana cara mengamalkan isi artikel "${article.title}" ini?`,
+      a: `Anda dapat mengamalkannya dengan membaca secara seksama, membagikan ilmunya kepada keluarga terdekat, serta mendukung program dakwah Al-Qur'an gratis dari Yayasan Mushaff Indonesia.`
+    },
+    {
+      q: 'Bagaimana cara berdonasi untuk mendukung dakwah Al-Qur’an di pelosok?',
+      a: 'Anda bisa menekan tombol donasi di atas untuk langsung menyalurkan sedekah jariyah Anda. Seluruh hasil donasi dialokasikan untuk penyediaan mushaf Al-Qur’an dan operasional santri tahfidz pelosok.'
+    }
+  ];
+
+  const articleBreadcrumbs = [
+    { name: 'Beranda', path: '/' },
+    { name: article.category || 'Artikel', path: '/about' },
+    { name: article.title, path: `/article/${article.slug || article.id}` }
+  ];
+
   return (
-    <div className="bg-slate-50 min-h-screen">
+    <div id="article_detail_page_container" className="bg-slate-50 min-h-screen">
       <MetaSEO 
         title={article.title} 
         description={plainTextDescription} 
         image={article.image}
         type="article"
+        schemaTypes={['Article', 'Breadcrumb', 'FAQ']}
+        articleMeta={{
+          authorName: article.authorName || 'Tim Redaksi Mushaff',
+          datePublished: article.createdAt?.toDate ? article.createdAt.toDate().toISOString() : new Date().toISOString(),
+          category: article.category || 'Edukasi Islami'
+        }}
+        breadcrumbList={articleBreadcrumbs}
+        faqList={articleFaqs}
       />
 
       {/* HERO */}

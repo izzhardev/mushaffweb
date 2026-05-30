@@ -50,7 +50,7 @@ export default function Navbar() {
                 <span className="text-lg sm:text-xl font-black text-primary tracking-tight leading-none uppercase">
                   {firstName}<span className="text-slate-900">{lastName}</span>
                 </span>
-                <span className="text-[8px] sm:text-[10px] font-black text-accent uppercase tracking-[0.2em]">{siteSettings.site_description || "Platform Pemberdayaan Umat"}</span>
+                <span className="hidden lg:block text-[10px] font-black text-accent uppercase tracking-[0.2em] truncate max-w-[250px]">{siteSettings.site_description || "Platform Pemberdayaan Umat"}</span>
               </div>
             </Link>
           </div>
